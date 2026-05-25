@@ -97,6 +97,40 @@ class MultiHeadAttention(nn.Module):
         return out
 
 
+class FeedForward(nn.Module):
+    def __init__(self,n_embed:int):
+        super().__init__()
+
+        self.net = nn.Sequential(
+            nn.Linear(n_embed,4*n_embed),
+            nn.ReLU(),
+            nn.Linear(4*n_embed,n_embed),
+        )
+
+    def forward(self,x:torch.Tensor):
+        return self.net(x)
+
+class Block(nn.Module):
+    def __init__(self,n_embed:int,num_heads:int,block_size:int):
+        super().__init__()
+
+        head_size = n_embed // num_heads
+
+        self.sa = MultiHeadAttention(
+            n_embed,
+            num_heads,
+            head_size,
+            block_size,
+        )
+        self.ffwd = FeedForward(n_embed)
+
+        self.ln1 = nn.LayerNorm(n_embed)
+        self.ln2 = nn.LayerNorm(n_embed)
+
+    def forward(self,x:torch.Tensor):
+        x = x + self.sa(self.ln1(x))
+        x = x + self.ffwd(self.ln2(x))
+
 class TinyGPTLanguageModel(nn.Module):
     """带位置编码的语言模型"""
     def __init__(self,vocab_size:int,n_embed:int,block_size:int):
@@ -105,7 +139,11 @@ class TinyGPTLanguageModel(nn.Module):
         self.block_size = block_size
         self.token_embedding_table = nn.Embedding(vocab_size,n_embed)
         self.position_embedding_table = nn.Embedding(block_size,n_embed)
-        self.sa_head = Head(n_embed,n_embed,block_size)
+        #self.sa_head = Head(n_embed,n_embed,block_size)
+        num_heads = 4
+        head_size = int(n_embed / num_heads) #这里一定要变成整数，否则会报错
+        self.sa_heads = MultiHeadAttention(n_embed,num_heads,head_size,block_size)
+        self.ffwd = FeedForward(n_embed)
         self.lm_head = nn.Linear(n_embed,vocab_size)
 
     def forward(self,idx:torch.Tensor,targets:torch.Tensor | None=None):
@@ -117,8 +155,9 @@ class TinyGPTLanguageModel(nn.Module):
         pos_emb=self.position_embedding_table(positions)
 
         x = token_emb+pos_emb
-        x = self.sa_head(x)
-
+        #x = self.sa_head(x)
+        x = self.sa_heads(x)
+        x = self.ffwd(x)
         logits=self.lm_head(x)
 
         if(targets==None):
