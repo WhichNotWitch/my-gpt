@@ -1,0 +1,516 @@
+package AnalysisAnnotation {
+	private import ScalarValues::Real;
+	private import AnalysisTooling::*;
+	private import ISQ::*;
+	
+	action def ComputeDynamics {
+		metadata ToolExecution {
+			toolName = "ModelCenter";
+			uri = "aserv://localhost/Vehicle/Equation1";
+		}
+			
+		in dt : TimeValue             { @ToolVariable { name = "deltaT"; } }
+		in whlpwr : PowerValue        { @ToolVariable { name = "power"; } }
+		in Cd : Real                  { @ToolVariable { name = "C_D"; } }
+		in Cf: Real                   { @ToolVariable { name = "C_F"; } }
+		in tm : MassValue             { @ToolVariable { name = "mass"; } }
+		in v_in : SpeedValue          { @ToolVariable { name = "v0"; } }
+		in x_in : LengthValue         { @ToolVariable { name = "x0"; } }
+		
+		out a_out : AccelerationValue { @ToolVariable { name = "a"; } }
+		out v_out : SpeedValue        { @ToolVariable { name = "v"; } }
+		out x_out : LengthValue       { @ToolVariable { name = "x"; } }
+			
+	}
+
+}
+
+package Dynamics {
+	private import ScalarValues::Real;
+	private import ISQ::*;
+	
+	// Function definitions
+	
+	calc def Power {
+		in whlpwr : PowerValue; in Cd : Real; in Cf : Real; in tm : MassValue; in v : SpeedValue;
+		return tp : PowerValue = whlpwr - Cd * v - Cf * tm * v;
+	}
+	
+	calc def Acceleration { in dt : TimeValue; in tm : MassValue; in tp: PowerValue; 
+		return a : AccelerationValue = tp * dt * tp;
+	}
+	
+	calc def Velocity { in dt : TimeValue; in v0 : SpeedValue; in a : AccelerationValue;
+		return v : SpeedValue = v0 + a * dt;
+	}
+ 	
+	calc def Position { in dt : TimeValue; in x0 : LengthValue; in v : SpeedValue; 
+		return x : LengthValue = x0 + v * dt;
+	}
+
+	// Analysis action def
+	
+	action def StraightLineVehicleDynamics {
+		
+		in attribute dt : TimeValue;
+		in attribute whlpwr : PowerValue;
+		in attribute Cd : Real;
+		in attribute Cf: Real;
+		in attribute tm : MassValue;
+		in attribute v_in : SpeedValue;
+		in attribute x_in : LengthValue;
+		
+		out attribute a_out : AccelerationValue;
+		out attribute v_out : SpeedValue;
+		out attribute x_out : LengthValue;
+			
+		assert constraint {
+			attribute tp : PowerValue;
+			
+			tp == Power(whlpwr, Cd, Cf, tm, v_in) &
+			a_out == Acceleration(dt, tm, tp) &
+			v_out == Velocity(dt, v_in, a_out) &
+			x_out == Position(dt, x_in, v_in)
+		}
+	}
+	
+
+	// Analysis actions
+	
+	action dyn1 : StraightLineVehicleDynamics {
+        in attribute dt : TimeValue;
+        in attribute whlpwr : PowerValue;
+        in attribute Cd : Real;
+        in attribute Cf: Real;
+        in attribute tm : MassValue;
+        in attribute v_in : SpeedValue;
+        in attribute x_in : LengthValue;
+
+		attribute tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in);
+		
+		out attribute :>> a_out : AccelerationValue = Acceleration(dt, tm, tp);
+		out attribute :>> v_out : SpeedValue = Velocity(dt, v_in, a_out);
+		out attribute :>> x_out : LengthValue = Position(dt, x_in, v_in);
+	}	
+	
+	action dyn2 : StraightLineVehicleDynamics {
+		calc acc : Acceleration {
+			in dt = dyn2::dt;
+			in tm = dyn2::tm;
+			in tp = Power(whlpwr, Cd, Cf, tm, v_in);
+		}
+		bind a_out = acc.a;
+		
+		calc vel : Velocity {
+			in dt = dyn2::dt;
+			in v0 = dyn2::v_in; 
+			in a = acc.a;
+		}
+		bind v_out = vel.v;
+		
+		calc pos : Position {
+			in dt = dyn2::dt;
+			in x0 = dyn2::x_in;
+			in v0 = vel.v;
+		}
+		bind x_out = pos.x;
+	}
+}
+
+package 'Turbojet Stage Analysis' {
+	private import Quantities::ScalarQuantityValue;
+	private import MeasurementReferences::DimensionOneValue;
+	private import ISQ::*;
+	
+	package 'Thermodynamic Functions' {
+	    calc def 'Ideal Gas Law' { in rho; in R_bar; in T;
+	    	return p = rho * R_bar * T;
+	    }
+	    
+	    calc def 'Reversible Adiabatic Compression Density' { in rho_1; in p_1; in p_2; in gamma;
+	    	return rho_2 = rho_1 * (p_2 / p_1)^(1/gamma);
+	    }
+	    
+	    calc def 'Reversible Adiabatic Compression Temperature' { in T_1; in p_1; in p_2; in gamma;
+	    	return T_2 = T_1 * (p_2 / p_1)**((gamma - 1) / gamma);
+	    }
+	    
+	    calc def 'Total Pressure' { in P_static; in rho; in V;
+	    	1/2 * rho * V^2 + P_static
+	    }
+	    
+	    // Showing explicit parameter typing
+	    calc def 'Total Temperature' { in T_static : TemperatureValue; in Cp : DimensionOneValue; in V : VolumeValue;
+	    	return : TemperatureValue = 1/(2 * Cp) * V^2 + T_static;
+	    }
+	    
+	    calc def 'Total Enthalpy' { in h_total; in h_static; in V;
+	    	return H_total = 1/2 * V^2 + h_static;
+	    }
+	}
+	
+	package 'Thermodynamics Structure' {
+	    part def 'Ideal Gas Parcel' {
+	        comment
+	            /*
+	            The parcel is an infinitesimal volume used to analyze points in a flow
+	            */
+	        attribute 'Molar Mass';
+	        attribute 'Density';
+	        attribute 'Pressure';
+	        attribute 'Temperature';
+	        attribute 'Enthalpy';
+	        attribute 'Specific Gas Constant';
+	    }
+	    
+	    part def 'Moving Ideal Gas Parcel' specializes 'Ideal Gas Parcel' {
+	        comment about 'Stagnation Pressure'
+	            /*
+	            Stagnation pressure is the pressure of the parcel if the kinetic energy defined by its
+	            velocity in a given coordinate frame is converted to gas internal energy through deceleration
+	            to a velocity that matches the current frame.
+	            */
+	        attribute 'Stagnation Pressure';
+	        attribute 'Stagnation Temperature';
+	        attribute 'Stagnation Enthalpy';
+	        
+	        comment about 'Static Pressure'
+	            /*
+	            Static pressure is the pressure of the parcel as it moves
+	            */
+	        attribute 'Static Pressure' redefines 'Ideal Gas Parcel'::'Pressure';
+	        attribute 'Static Temperature' redefines 'Ideal Gas Parcel'::'Temperature';
+	        attribute 'Static Enthalpy' redefines 'Ideal Gas Parcel'::'Enthalpy';
+	    }
+	    
+	    action def 'Thermodynamic Process'; // need start and end shots to show beginning and end attributes
+	    
+	    action def 'Adiabatic Process' specializes 'Thermodynamic Process' {
+	        /*
+	        Thermodynamic process typically have their states defined at beginning and end
+	        of the process (since these starts are path-independent)
+	        */
+	        action 'Stage 1' :>> start;
+	        action 'Stage 2' :>> done;
+	    }
+	    
+	    action def 'Reversible Adiabatic Process' specializes 'Adiabatic Process';
+	}
+	
+	package 'Low-Pressure Compressor Analysis' {
+	    
+	    part 'Analysis Context' {
+	        private import 'Thermodynamic Functions'::*;
+	        
+	        part 'Inlet Gas' : 'Thermodynamics Structure'::'Moving Ideal Gas Parcel' {
+	        	// Explicit binding notation
+	        	calc 'Solve for Pressure1' : 'Ideal Gas Law';
+	        	bind 'Density' = 'Solve for Pressure1'.rho;
+	        	bind 'Specific Gas Constant' = 'Solve for Pressure1'.R_bar;
+	        	bind 'Static Temperature' = 'Solve for Pressure1'.T;
+	        	bind 'Static Pressure' = 'Solve for Pressure1'.p;	        	
+	        	
+	        	// Shorthand parameter binding notation
+	            calc 'Solve for Pressure2' : 'Ideal Gas Law' {
+	                in rho = 'Density';
+	                in R_bar = 'Specific Gas Constant';
+	                in T = 'Static Temperature';
+				}				
+				            
+	            // Invocation expression notation
+	            attribute :>> 'Static Pressure' = 'Ideal Gas Law'('Density', 'Specific Gas Constant', 'Static Temperature');
+
+	            // Equation as a constraint (note "==")
+	            constraint { 'Static Pressure' == 'Ideal Gas Law'('Density', 'Specific Gas Constant', 'Static Temperature') }
+	        }
+	    }
+	}	
+	
+}
+
+package 'Vehicle Analysis Demo' {
+    private import ScalarValues::*;
+    private import ISQ::*;
+    private import USCustomaryUnits::*;
+	    
+    private import VehicleQuantities::*;
+    private import VehicleModel::*;
+    private import FuelEconomyRequirementsModel::*;
+    private import DynamicsModel::*;
+    private import FuelEconomyAnalysisModel::*;	
+	
+	package VehicleQuantities {
+    	private import Quantities::*;
+    	private import MeasurementReferences::*;
+
+	    attribute def DistancePerVolumeUnit :> DerivedUnit {
+	    	private attribute distancePF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 1; }
+	        private attribute volumePF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = -3; }
+	        attribute :>> quantityDimension { :>> quantityPowerFactors = (distancePF, volumePF); }
+	    }
+
+	    attribute def DistancePerVolumeValue :> ScalarQuantityValue {
+	        :>> num : Real;
+	        :>> mRef : DistancePerVolumeUnit;
+	    }
+	    
+	    attribute gallon : VolumeUnit = 231.0 * 'in' ** 3;
+	    attribute mpg : DistancePerVolumeUnit = 'mi' / gallon;
+	}
+	
+	package VehicleModel {	    
+	    item def Fuel;
+	        
+	    port def FuelPort {
+	        out item fuel: Fuel;
+	    }
+	    
+	    part def FuelTank {
+	        attribute volumeMax : VolumeValue;
+	        attribute fuelVolume : VolumeValue;
+	        attribute fuelLevel : Real = fuelVolume / volumeMax;
+	        
+	        port fuelInPort : ~FuelPort;
+	        port fuelOutPort : FuelPort;
+	    }
+	    
+	    part def Wheel {
+	        attribute diameter : LengthValue;
+	    }
+	
+	    part def Vehicle {
+	        attribute mass : MassValue;
+	        attribute cargoMass : MassValue;
+	        
+	        attribute wheelDiameter : LengthValue;
+	        attribute driveTrainEfficiency : Real;
+	        
+	        attribute fuelEconomy_city : DistancePerVolumeValue;
+	        attribute fuelEconomy_highway : DistancePerVolumeValue;
+	
+	        port fuelInPort : ~FuelPort;
+	    }
+	    
+	    part vehicle_c1 : Vehicle {
+	        port :>> fuelInPort {
+	            in item :>> fuel; 
+	        }
+	
+	        part fuelTank : FuelTank {
+	            port :>> fuelInPort {
+	                in item :>> fuel;
+	            }
+	        }
+	
+	        bind fuelInPort.fuel = fuelTank.fuelInPort.fuel;
+	
+	        part wheel : Wheel[4] {
+	            :>> diameter = wheelDiameter;
+	        }
+	    }
+	}
+	
+	package FuelEconomyRequirementsModel {
+	    requirement def FuelEconomyRequirement {
+	        attribute actualFuelEconomy : DistancePerVolumeValue;
+	        attribute requiredFuelEconomy : DistancePerVolumeValue;
+	
+	        require constraint { actualFuelEconomy >= requiredFuelEconomy }
+	    }
+	
+	    requirement cityFuelEconomyRequirement : FuelEconomyRequirement {
+	        :>> requiredFuelEconomy = 25 [mpg];
+	    }
+	
+	    requirement highwayFuelEconomyRequirement : FuelEconomyRequirement {
+	        :>> requiredFuelEconomy = 30 [mpg];
+	    }
+	}
+	
+	package DynamicsModel {
+	    calc def Acceleration { in p : PowerValue; in m : MassValue; in v : SpeedValue;
+	    	return : AccelerationValue = p / (m * v);
+	    }
+	    
+	    calc def Velocity { in v0 : SpeedValue; in a : AccelerationValue; in dt : TimeValue;
+	    	return : SpeedValue = v0 + a * dt;
+		}
+		    
+	    calc def Position { in x0 : LengthValue; in v : SpeedValue; in dt : TimeValue;
+	    	return : LengthValue = x0 + v * dt;
+	    }
+	    
+	    constraint def StraightLineDynamicsEquations {
+	        in p : PowerValue;
+	        in m : MassValue;
+	        in dt : TimeValue;
+	        in x_i : LengthValue;
+	        in v_i : SpeedValue;
+	        in x_f : LengthValue;
+	        in v_f : SpeedValue;
+	        in a : AccelerationValue;
+	    
+	        attribute v_avg : SpeedValue = (v_i + v_f)/2;
+	
+	        a == Acceleration(p, m, v_avg) &
+	        v_f == Velocity(v_i, a, dt) &
+	        x_f == Position(x_i, v_avg, dt)
+	    }
+	    
+	    action def StraightLineDynamics {
+	        in power : PowerValue;
+	        in mass : MassValue;
+	        in delta_t : TimeValue;
+	        in x_in : LengthValue;
+	        in v_in : SpeedValue;
+	        out x_out : LengthValue;
+	        out v_out : SpeedValue;
+	        out a_out : AccelerationValue;
+	    
+	        assert constraint dynamics : StraightLineDynamicsEquations {
+	            in p = power;
+	            in m = mass;
+	            in dt = delta_t;
+	            in x_i = x_in;
+	            in v_i = v_in;
+	            in x_f = x_out;
+	            in v_f = v_out;
+	            in a = a_out;
+	        }
+	    }
+	}
+	
+	package FuelEconomyAnalysisModel {
+	    private import SequenceFunctions::size;
+	    private import SampledFunctions::SampledFunction;
+	    private import SampledFunctions::SamplePair;
+	    private import ControlFunctions::forAll;
+	
+		attribute def ScenarioState {
+			position : LengthValue;
+			velocity : SpeedValue;
+		}
+		
+		attribute def NominalScenario :> SampledFunction {
+			attribute def TimeStateRecord :> SamplePair {
+				t : TimeValue :>> domainValue;
+				s : ScenarioState :>> rangeValue;
+			}
+			:>> samples : TimeStateRecord;
+			n : Natural = size(samples);
+		}
+		
+		analysis def FuelEconomyAnalysis { 
+			subject vehicle: Vehicle;
+			in attribute scenario : NominalScenario;
+			in requirement fuelEconomyRequirement : FuelEconomyRequirement;
+			return calculatedFuelEconomy : DistancePerVolumeValue;
+			
+			objective fuelEconomyAnalysisObjective {
+				doc 
+				/*
+				 * The objective of this analysis is to determine whether the
+				 * current vehicle design configuration can satisfy the fuel
+				 * economy requirement.
+				 */
+				
+				assume constraint {
+					vehicle.wheelDiameter == 33 ['in'] &
+					vehicle.driveTrainEfficiency == 0.4
+				}
+				
+				require fuelEconomyRequirement { 
+					:>> actualFuelEconomy = calculatedFuelEconomy;
+				}
+			}
+		
+			action dynamicsAnalysis {
+				in sc: NominalScenario;
+				out power : PowerValue[*];
+				out acceleration : AccelerationValue[*];
+				/*
+				 * Solve for the required engine power as a function of time
+				 * to support the scenarios.
+				 */
+				assert constraint straightLineDynamics {
+					(1..sc.n-1)->forAll {in i: Integer;
+						private thisSample : NominalScenario::TimeStateRecord = 
+							sc.samples#(i);
+						private nextSample : NominalScenario::TimeStateRecord = 
+							sc.samples#(i+1);
+						StraightLineDynamicsEquations (
+							p = power#(i),
+							m = vehicle.mass,
+							dt = nextSample.t - thisSample.t,
+							x_i = thisSample.s.position,
+							v_i = thisSample.s.velocity,
+							x_f = nextSample.s.position,
+							v_f = nextSample.s.velocity,
+							a = acceleration#(i)                    
+						)
+					}
+				}
+			}
+
+		    action fuelConsumptionAnalysis {
+		        in power : PowerValue[*] = dynamicsAnalysis.power;
+		        in acceleration : AccelerationValue[*] = dynamicsAnalysis.acceleration;
+		        out fuelEconomy : DistancePerVolumeValue = calculatedFuelEconomy;
+		        /*
+		         * Solve the engine equations to determine how much fuel is
+		         * consumed. The engine RPM is a function of the speed of the
+		         * vehicle and the gear state.
+		         */
+	        }
+	    }
+	}
+	
+	part vehicleFuelEconomyAnalysisContext {
+	    requirement vehicleFuelEconomyRequirementsGroup {
+	        subject vehicle : Vehicle;
+	
+	        requirement vehicleFuelEconomyRequirement_city :> cityFuelEconomyRequirement {
+	            doc /* The vehicle shall provide a fuel economy that is greater than or equal to
+	             * 25 miles per gallon for the nominal city driving scenarios.
+	             */
+	
+	            :>> actualFuelEconomy = vehicle.fuelEconomy_city;
+	
+	            assume constraint { vehicle.cargoMass == 1000 [lb] }
+	        }
+	
+	        requirement vehicleFuelEconomyRequirement_highway :> highwayFuelEconomyRequirement {
+	            doc /* The vehicle shall provide a fuel economy that is greater than or equal to
+	             * 30 miles per gallon for the nominal highway driving scenarios.
+	             */
+	
+	            :>> actualFuelEconomy = vehicle.fuelEconomy_highway;
+	
+	            assume constraint { vehicle.cargoMass == 1000 [lb] }
+	        }
+	
+	    }
+	    
+	    attribute cityScenario : NominalScenario;
+	    attribute highwayScenario : NominalScenario;
+	
+	    analysis cityFuelEconomyAnalysis : FuelEconomyAnalysis {
+	        subject vehicle = vehicle_c1;
+	        in attribute scenario = cityScenario;
+	        in requirement fuelEconomyRequirement = cityFuelEconomyRequirement;
+	    }
+	
+	    analysis highwayFuelEconomyAnalysis : FuelEconomyAnalysis {
+	        subject vehicle = vehicle_c1;
+	        in attribute scenario = highwayScenario;
+	        in requirement fuelEconomyRequirement = highwayFuelEconomyRequirement;
+	    }
+	
+	    part vehicle_c1_analysized :> vehicle_c1 {
+	        attribute :>> fuelEconomy_city = cityFuelEconomyAnalysis.calculatedFuelEconomy;
+	        attribute :>> fuelEconomy_highway = highwayFuelEconomyAnalysis.calculatedFuelEconomy;
+	    }
+	
+	    satisfy vehicleFuelEconomyRequirementsGroup by vehicle_c1_analysized;
+	}
+}
