@@ -130,6 +130,7 @@ class Block(nn.Module):
     def forward(self,x:torch.Tensor):
         x = x + self.sa(self.ln1(x))
         x = x + self.ffwd(self.ln2(x))
+        return x
 
 class TinyGPTLanguageModel(nn.Module):
     """带位置编码的语言模型"""
@@ -141,10 +142,17 @@ class TinyGPTLanguageModel(nn.Module):
         self.position_embedding_table = nn.Embedding(block_size,n_embed)
         #self.sa_head = Head(n_embed,n_embed,block_size)
         num_heads = 4
-        head_size = int(n_embed / num_heads) #这里一定要变成整数，否则会报错
-        self.sa_heads = MultiHeadAttention(n_embed,num_heads,head_size,block_size)
-        self.ffwd = FeedForward(n_embed)
+
+        self.blocks=nn.Sequential(
+            Block(
+                n_embed,
+                num_heads,
+                block_size,
+            )
+        )
+        self.ln_f = nn.LayerNorm(n_embed)
         self.lm_head = nn.Linear(n_embed,vocab_size)
+        
 
     def forward(self,idx:torch.Tensor,targets:torch.Tensor | None=None):
         batch_size,block_size = idx.shape
@@ -155,9 +163,8 @@ class TinyGPTLanguageModel(nn.Module):
         pos_emb=self.position_embedding_table(positions)
 
         x = token_emb+pos_emb
-        #x = self.sa_head(x)
-        x = self.sa_heads(x)
-        x = self.ffwd(x)
+        x = self.blocks(x)
+        x = self.ln_f(x)
         logits=self.lm_head(x)
 
         if(targets==None):
