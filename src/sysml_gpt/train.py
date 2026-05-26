@@ -15,6 +15,8 @@ max_iters = 2000
 eval_interval = 100
 learning_rate = 3e-4
 n_embed = 64
+n_layer = 4
+num_heads =4
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 @torch.no_grad()
@@ -52,6 +54,8 @@ def main():
         vocab_size=tokenizer.vocab_size,
         n_embed=n_embed,
         block_size=block_size,
+        n_layer=n_layer,
+        num_heads=num_heads,
     )
     model = model.to(device)
 
@@ -88,7 +92,9 @@ def main():
             "stoi":tokenizer.stoi,
             "itos":tokenizer.itos,
             "block_size":block_size,
-            "n_embed":n_embed
+            "n_embed":n_embed,
+            "n_layer": n_layer,
+            "num_heads": num_heads,
         },
         checkpoint_path,
     )

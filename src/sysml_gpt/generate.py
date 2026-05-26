@@ -21,10 +21,14 @@ def main():
     itos=checkpoint["itos"]
     block_size = checkpoint["block_size"]
     n_embed = checkpoint["n_embed"]
+    n_layer = checkpoint["n_layer"]
+    num_heads = checkpoint["num_heads"]
 
     model =TinyGPTLanguageModel(vocab_size=vocab_size,
                                 n_embed=n_embed,
                                 block_size=block_size,
+                                n_layer=n_layer,
+                                num_heads=num_heads,
                                 )
     model.load_state_dict(checkpoint["model_state_dict"])
     model = model.to(device)

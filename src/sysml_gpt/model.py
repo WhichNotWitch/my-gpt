@@ -135,7 +135,7 @@ class Block(nn.Module):
 
 class TinyGPTLanguageModel(nn.Module):
     """带位置编码的语言模型"""
-    def __init__(self,vocab_size:int,n_embed:int,block_size:int):
+    def __init__(self,vocab_size:int,n_embed:int,block_size:int,n_layer:int=4,num_heads:int = 4,):
         super().__init__()
 
         self.block_size = block_size
@@ -145,11 +145,12 @@ class TinyGPTLanguageModel(nn.Module):
         num_heads = 4
 
         self.blocks=nn.Sequential(
-            Block(
+            *[Block(
                 n_embed,
                 num_heads,
                 block_size,
-            )
+            ) for _ in range(n_layer)
+            ]
         )
         self.ln_f = nn.LayerNorm(n_embed)
         self.lm_head = nn.Linear(n_embed,vocab_size)
