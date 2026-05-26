@@ -40,12 +40,13 @@ class BigramLanguageModel(nn.Module):
         return idx
     
 class Head(nn.Module):
-    def __init__(self,n_embed:int,head_size:int,block_size:int):
+    def __init__(self,n_embed:int,head_size:int,block_size:int,dropout:float):
         super().__init__()
         self.key = nn.Linear(n_embed,head_size,bias=False)
         self.query = nn.Linear(n_embed,head_size,bias=False)
         self.value = nn.Linear(n_embed,head_size,bias=False)
-        
+        self.dropout = nn.Dropout(dropout)
+
         self.register_buffer("tril",
                              torch.tril(torch.ones(block_size,block_size)),
                              )
@@ -66,6 +67,7 @@ class Head(nn.Module):
         )
 
         weights = F.softmax(weights,dim=-1)
+        weights = self.dropout(weights)
 
         v = self.value(x)
         out = weights @ v
@@ -79,6 +81,7 @@ class MultiHeadAttention(nn.Module):
             num_heads:int,
             head_size:int,
             block_size:int,
+            dropout:float,
             ):
         super().__init__()
         self.heads = nn.ModuleList(
@@ -86,34 +89,38 @@ class MultiHeadAttention(nn.Module):
                 n_embed,
                 head_size,
                 block_size,
+                dropout,
             ) for _ in range(num_heads)
             ]
         )
+        self.dropout = nn.Dropout(dropout)
         self.proj = nn.Linear(num_heads *head_size,n_embed)
 
     def forward(self,x:torch.Tensor):
         out = torch.cat([head(x) for head in self.heads],dim=-1)
         out = self.proj(out)
+        out = self.dropout(out)
         return out
 
 
 class FeedForward(nn.Module):
-    def __init__(self,n_embed:int):
+    def __init__(self,n_embed:int,dropout:float):
         super().__init__()
 
         self.net = nn.Sequential(
             nn.Linear(n_embed,4*n_embed),
             nn.ReLU(),
             nn.Linear(4*n_embed,n_embed),
+            nn.Dropout(dropout),
         )
 
     def forward(self,x:torch.Tensor):
         return self.net(x)
 
 class Block(nn.Module):
-    def __init__(self,n_embed:int,num_heads:int,block_size:int):
+    def __init__(self,n_embed:int,num_heads:int,block_size:int,dropout:float):
         super().__init__()
-
+        assert n_embed % num_heads == 0
         head_size = n_embed // num_heads
 
         self.sa = MultiHeadAttention(
@@ -121,8 +128,9 @@ class Block(nn.Module):
             num_heads,
             head_size,
             block_size,
+            dropout,
         )
-        self.ffwd = FeedForward(n_embed)
+        self.ffwd = FeedForward(n_embed,dropout)
 
         self.ln1 = nn.LayerNorm(n_embed)
         self.ln2 = nn.LayerNorm(n_embed)
@@ -135,20 +143,20 @@ class Block(nn.Module):
 
 class TinyGPTLanguageModel(nn.Module):
     """带位置编码的语言模型"""
-    def __init__(self,vocab_size:int,n_embed:int,block_size:int,n_layer:int=4,num_heads:int = 4,):
+    def __init__(self,vocab_size:int,n_embed:int,block_size:int,n_layer:int=4,num_heads:int = 4,dropout:float=0.2,):
         super().__init__()
 
         self.block_size = block_size
         self.token_embedding_table = nn.Embedding(vocab_size,n_embed)
         self.position_embedding_table = nn.Embedding(block_size,n_embed)
         #self.sa_head = Head(n_embed,n_embed,block_size)
-        num_heads = 4
 
         self.blocks=nn.Sequential(
             *[Block(
                 n_embed,
                 num_heads,
                 block_size,
+                dropout,
             ) for _ in range(n_layer)
             ]
         )
@@ -169,7 +177,7 @@ class TinyGPTLanguageModel(nn.Module):
         x = self.ln_f(x)
         logits=self.lm_head(x)
 
-        if(targets==None):
+        if(targets is None):
             loss=None
         else:
             batch_size,block_size,vocab_size = logits.shape
@@ -179,14 +187,22 @@ class TinyGPTLanguageModel(nn.Module):
 
         return logits,loss
     
-    def generate(self,idx:torch.Tensor,max_new_tokens:int,temperature:float = 1.0):
+    def generate(self,idx:torch.Tensor,max_new_tokens:int,temperature:float = 1.0,top_k:int|None=None):
         for _ in range(max_new_tokens):
             idx_cond = idx[:,-self.block_size:]
             logits,_ = self(idx_cond)
 
             logits = logits[:,-1,:]
             logits = logits / temperature
-
+            
+            if top_k is not None:
+                values,_ = torch.topk(logits,k=top_k)
+                min_values = values[:,-1].unsqueeze(-1)
+                logits = torch.where(
+                    logits < min_values,
+                    torch.full_like(logits,float("-inf")),
+                    logits,
+                )
             probs = F.softmax(logits,dim=-1)
             idx_next = torch.multinomial(probs,num_samples=1)
             idx = torch.cat((idx,idx_next),dim=1)
@@ -222,6 +238,7 @@ if __name__ == "__main__":
         vocab_size=vocab_size,
         n_embed=n_embed,
         block_size=block_size,
+        dropout=0.2,
     )
 
     x = torch.randint(0, vocab_size, (4, block_size))
