@@ -2,11 +2,11 @@
 
 import argparse
 import torch
-from sysml_gpt.model import BigramLanguageModel
+from sysml_gpt.model import TinyGPTLanguageModel
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--checkpoint",default = "checkpoints/bigram.pt")
+    parser.add_argument("--checkpoint",default = "checkpoints/tiny_gpt.pt")
     parser.add_argument("--max-new-tokens",type=int,default=300)
     parser.add_argument("--start",default="\n")
     args=parser.parse_args()
@@ -18,8 +18,13 @@ def main():
     vocab_size = checkpoint["vocab_size"]
     stoi=checkpoint["stoi"]
     itos=checkpoint["itos"]
+    block_size = checkpoint["block_size"]
+    n_embed = checkpoint["n_embed"]
 
-    model =BigramLanguageModel(vocab_size)
+    model =TinyGPTLanguageModel(vocab_size=vocab_size,
+                                n_embed=n_embed,
+                                block_size=block_size,
+                                )
     model.load_state_dict(checkpoint["model_state_dict"])
     model = model.to(device)
     model.eval()

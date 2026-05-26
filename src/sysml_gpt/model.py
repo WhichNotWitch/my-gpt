@@ -128,6 +128,7 @@ class Block(nn.Module):
         self.ln2 = nn.LayerNorm(n_embed)
 
     def forward(self,x:torch.Tensor):
+        #很多 GPT 风格模型更常用 Pre-LN，因为训练深层 Transformer 时更稳定。
         x = x + self.sa(self.ln1(x))
         x = x + self.ffwd(self.ln2(x))
         return x
