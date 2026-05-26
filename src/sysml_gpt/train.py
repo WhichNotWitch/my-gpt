@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument("--checkpoint-path", default=None)
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--no-resume", action="store_true")
+    parser.add_argument("--best-checkpoint-path",default=None)
     return parser.parse_args()
 
 def apply_args(config: TrainConfig, args):
@@ -41,6 +42,9 @@ def apply_args(config: TrainConfig, args):
     if args.checkpoint_path is not None:
         config.checkpoint_path = args.checkpoint_path
         config.resume_path = args.checkpoint_path
+
+    if args.best_checkpoint_path is not None:
+        config.best_checkpoint_path = args.best_checkpoint_path
 
     if args.resume:
         config.resume = True
@@ -74,6 +78,37 @@ def estimate_loss(model,train_data,val_data,config):
     model.train()
     return out
 
+def save_checkpoint(
+        path,
+        model,
+        optimizer,
+        step,
+        tokenizer,
+        config,
+        best_val_loss,
+):
+    checkpoint_path = Path(path)
+    checkpoint_path.parent.mkdir(exist_ok=True)
+
+    torch.save(
+        {
+            "model_state_dict":model.state_dict(),
+            "vocab_size":tokenizer.vocab_size,
+            "stoi":tokenizer.stoi,
+            "itos":tokenizer.itos,
+            "block_size":config.block_size,
+            "n_embed":config.n_embed,
+            "n_layer": config.n_layer,
+            "num_heads": config.num_heads,
+            "dropout":config.dropout,
+            "optimizer_state_dict":optimizer.state_dict(),
+            "step":step,
+            "best_val_loss":best_val_loss,
+        },
+        checkpoint_path,
+    )
+
+
 def main():
     args = parse_args()
     config = apply_args(TrainConfig(), args)
@@ -95,7 +130,8 @@ def main():
     )
     model = model.to(device)
 
-    optimzer = torch.optim.AdamW(model.parameters(),lr=config.learning_rate)
+    optimizer = torch.optim.AdamW(model.parameters(),lr=config.learning_rate)
+    best_val_loss = float("inf")
 
     start_step=0
     if config.resume and Path(config.resume_path).exists():
@@ -103,11 +139,15 @@ def main():
         model.load_state_dict(checkpoint["model_state_dict"])
 
         if "optimizer_state_dict" in checkpoint:
-            optimzer.load_state_dict(checkpoint["optimizer_state_dict"])
+            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
 
         start_step = checkpoint.get("step",0)
-
+        best_val_loss = checkpoint.get("best_val_loss",float("inf"))
         print(f"resume from {config.resume_path} at step {start_step}")
+
+    
+    
+    
     end_step = start_step + config.train_steps
     print(f"training from step {start_step} to {end_step}")
     for step in range(start_step,end_step):
@@ -118,6 +158,20 @@ def main():
                 f" train loss {losses['train']:.4f}"
                 f" val loss {losses['val']:.4f}"
             )
+            val_loss = losses["val"]
+
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                save_checkpoint(
+                    config.best_checkpoint_path,
+                    model,
+                    optimizer,
+                    step + 1,
+                    tokenizer,
+                    config,
+                    best_val_loss,
+                )
+                print(f"saved best checkpoint to {config.best_checkpoint_path}")
 
         x,y = get_batch(train_data,config.batch_size,config.block_size)
         x = x.to(device)
@@ -125,32 +179,23 @@ def main():
 
         logits,loss = model(x,y)
 
-        optimzer.zero_grad(set_to_none=True)
+        optimizer.zero_grad(set_to_none=True)
         loss.backward()
-        optimzer.step()
-
-    checkpoint_path = Path(config.checkpoint_path)
-    checkpoint_path.parent.mkdir(exist_ok=True)
-
-
-    torch.save(
-        {
-            "model_state_dict":model.state_dict(),
-            "vocab_size":tokenizer.vocab_size,
-            "stoi":tokenizer.stoi,
-            "itos":tokenizer.itos,
-            "block_size":config.block_size,
-            "n_embed":config.n_embed,
-            "n_layer": config.n_layer,
-            "num_heads": config.num_heads,
-            "dropout":config.dropout,
-            "optimizer_state_dict":optimzer.state_dict(),
-            "step":step+1,
-        },
-        checkpoint_path,
+        optimizer.step()
+    
+    save_checkpoint(
+        config.checkpoint_path,
+        model,
+        optimizer,
+        step + 1,
+        tokenizer,
+        config,
+        best_val_loss,
     )
 
-    print(f"saved checkpoint to {checkpoint_path}")
+    print(f"saved checkpoint to {config.checkpoint_path}")
+    
+    
 
 if __name__=="__main__":
     main()

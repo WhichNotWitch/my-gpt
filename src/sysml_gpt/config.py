@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class TrainConfig:
     input_path:str = "input.txt"
     checkpoint_path:str = "checkpoints/tiny_gpt.pt"
+    best_checkpoint_path : str = "checkpoints/tiny_gpt_best.pt"
 
     batch_size:int =32
     block_size:int =64

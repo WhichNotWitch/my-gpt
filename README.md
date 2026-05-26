@@ -24,7 +24,7 @@ input.txt的数据来源于官方 Systems-Modeling/SysML-v2-Release 仓库([http
   - layer normalization
   - dropout
 - checkpoint 保存
-- resume training，从已有 checkpoint 继续训练
+- resume training，从已有 checkpoint 继续训练                       
 - 支持 temperature 和 top-k sampling 的文本生成
 - 使用 pytest 测试 tokenizer 和数据 batch 逻辑
 
