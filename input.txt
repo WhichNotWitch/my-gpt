@@ -514,3 +514,894 @@ package 'Vehicle Analysis Demo' {
 	    satisfy vehicleFuelEconomyRequirementsGroup by vehicle_c1_analysized;
 	}
 }
+
+// ===== Example 001: Package with imports | category=packages =====
+package Training_Package_Import {
+    private import ScalarValues::*;
+    private import ISQ::*;
+
+    part def SystemElement {
+        attribute name : String;
+    }
+}
+
+// ===== Example 002: Nested packages | category=packages =====
+package VehicleArchitecture {
+    package Structure {
+        part def Vehicle;
+        part def Powertrain;
+    }
+
+    package Behavior {
+        action def StartVehicle;
+        action def StopVehicle;
+    }
+}
+
+// ===== Example 003: Documentation comments | category=comments =====
+package DocumentationExample {
+    doc /* A compact example showing documentation comments. */
+
+    part def Sensor {
+        doc /* A sensor transforms a physical signal into data. */
+        attribute samplingRate;
+        attribute accuracy;
+    }
+}
+
+// ===== Example 004: Public and private imports | category=imports =====
+package ImportVisibilityExample {
+    public import ScalarValues::Real;
+    private import ScalarValues::String;
+
+    part def NamedValue {
+        attribute name : String;
+        attribute value : Real;
+    }
+}
+
+// ===== Example 005: Aliases | category=aliases =====
+package AliasExample {
+    private import ScalarValues::*;
+
+    alias MassValue for ScalarValues::Real;
+
+    part def Payload {
+        attribute mass : MassValue;
+    }
+}
+
+// ===== Example 006: Library wrapper | category=packages =====
+package SmallDomainLibrary {
+    package Types {
+        attribute def Identifier;
+        attribute def Timestamp;
+    }
+
+    package Components {
+        part def Component {
+            attribute id : Types::Identifier;
+        }
+    }
+}
+
+// ===== Example 007: Simple part definition | category=parts =====
+package PartDefinitionVehicle {
+    private import ScalarValues::*;
+
+    part def Vehicle {
+        attribute mass : Real;
+        attribute vin : String;
+
+        part engine : Engine;
+        part battery : Battery;
+        ref part driver : Person;
+    }
+
+    part def Engine;
+    part def Battery;
+    part def Person;
+}
+
+// ===== Example 008: Part usage instance | category=parts =====
+package PartUsageDrone {
+    part def Drone {
+        part frame : Frame;
+        part controller : FlightController;
+        part motor[4] : Motor;
+    }
+
+    part def Frame;
+    part def FlightController;
+    part def Motor;
+
+    part inspectionDrone : Drone;
+}
+
+// ===== Example 009: Specialization | category=generalization =====
+package SpecializationExample {
+    part def Vehicle {
+        attribute mass;
+    }
+
+    part def ElectricVehicle specializes Vehicle {
+        part battery : BatteryPack;
+    }
+
+    part def BatteryPack;
+}
+
+// ===== Example 010: Subsetting parts | category=subsetting =====
+package SubsettingExample {
+    part def Fleet {
+        part vehicles[*] : Vehicle;
+        part serviceVehicles[0..*] : Vehicle subsets vehicles;
+    }
+
+    part def Vehicle;
+}
+
+// ===== Example 011: Redefinition parts | category=redefinition =====
+package RedefinitionExample {
+    part def GenericComputer {
+        part processor : Processor;
+    }
+
+    part def EdgeComputer specializes GenericComputer {
+        part redefines processor : LowPowerProcessor;
+    }
+
+    part def Processor;
+    part def LowPowerProcessor specializes Processor;
+}
+
+// ===== Example 012: Multiplicity | category=multiplicity =====
+package MultiplicityExample {
+    part def WarehouseRobot {
+        part wheel[4] : Wheel;
+        part sensor[1..*] : Sensor;
+        part optionalTool[0..1] : Tool;
+    }
+
+    part def Wheel;
+    part def Sensor;
+    part def Tool;
+}
+
+// ===== Example 013: Reference part | category=parts =====
+package ReferencePartExample {
+    part def RobotCell {
+        part robot : RobotArm;
+        ref part operator : HumanOperator;
+        ref part upstreamLine : ProductionLine;
+    }
+
+    part def RobotArm;
+    part def HumanOperator;
+    part def ProductionLine;
+}
+
+// ===== Example 014: Attributes with values | category=attributes =====
+package AttributeValueExample {
+    private import ScalarValues::*;
+
+    part def BatteryCell {
+        attribute nominalVoltage : Real = 3.7;
+        attribute capacityAh : Real = 5.0;
+        attribute chemistry : String = "Li-ion";
+    }
+}
+
+// ===== Example 015: Port definitions | category=ports =====
+package PortDefinitionExample {
+    port def PowerPort {
+        attribute voltage;
+        attribute current;
+    }
+
+    part def PowerSupply {
+        port output : PowerPort;
+    }
+
+    part def Load {
+        port input : PowerPort;
+    }
+}
+
+// ===== Example 016: Interface connection | category=interfaces =====
+package InterfaceExample {
+    port def DataPort;
+
+    interface def DataLink {
+        end source : DataPort;
+        end sink : DataPort;
+    }
+
+    part def SensorNode {
+        port dataOut : DataPort;
+    }
+
+    part def Controller {
+        port dataIn : DataPort;
+    }
+}
+
+// ===== Example 017: Connection usage | category=connections =====
+package ConnectionUsageExample {
+    part def Camera {
+        port videoOut : VideoPort;
+    }
+
+    part def Processor {
+        port videoIn : VideoPort;
+    }
+
+    port def VideoPort;
+
+    part def VisionSystem {
+        part camera : Camera;
+        part processor : Processor;
+        connect camera.videoOut to processor.videoIn;
+    }
+}
+
+// ===== Example 018: Binding connector | category=binding =====
+package BindingConnectorExample {
+    private import ScalarValues::*;
+
+    part def Tank {
+        attribute volume : Real;
+    }
+
+    part def Display {
+        attribute shownVolume : Real;
+    }
+
+    part def FuelPanel {
+        part tank : Tank;
+        part display : Display;
+        bind tank.volume = display.shownVolume;
+    }
+}
+
+// ===== Example 019: Item flow | category=flows =====
+package ItemFlowExample {
+    item def Command;
+
+    port def CommandPort;
+
+    part def OperatorConsole {
+        port commandOut : CommandPort;
+    }
+
+    part def Robot {
+        port commandIn : CommandPort;
+    }
+
+    part def ControlSystem {
+        part console : OperatorConsole;
+        part robot : Robot;
+        flow of Command from console.commandOut to robot.commandIn;
+    }
+}
+
+// ===== Example 020: Physical flow | category=flows =====
+package CoolantFlowExample {
+    item def Coolant;
+    port def FluidPort;
+
+    part def Pump {
+        port outlet : FluidPort;
+    }
+
+    part def HeatExchanger {
+        port inlet : FluidPort;
+    }
+
+    part def CoolingLoop {
+        part pump : Pump;
+        part exchanger : HeatExchanger;
+        flow of Coolant from pump.outlet to exchanger.inlet;
+    }
+}
+
+// ===== Example 021: Connection definition | category=connections =====
+package ConnectionDefinitionExample {
+    port def ElectricalPin;
+
+    connection def Wire {
+        end a : ElectricalPin;
+        end b : ElectricalPin;
+    }
+
+    part def Circuit {
+        port p1 : ElectricalPin;
+        port p2 : ElectricalPin;
+        connection wire : Wire connect p1 to p2;
+    }
+}
+
+// ===== Example 022: Action definition | category=actions =====
+package ActionDefinitionExample {
+    item def DiagnosticReport;
+
+    action def RunDiagnostics {
+        out item report : DiagnosticReport;
+    }
+}
+
+// ===== Example 023: Action usage sequence | category=actions =====
+package ActionSequenceExample {
+    action def Prepare;
+    action def Execute;
+    action def Report;
+
+    action mission {
+        first start : Prepare;
+        then run : Execute;
+        then finish : Report;
+    }
+}
+
+// ===== Example 024: Conditional succession | category=actions =====
+package ConditionalActionExample {
+    private import ScalarValues::*;
+
+    action def CheckTemperature {
+        out attribute safe : Boolean;
+    }
+
+    action def ContinueOperation;
+    action def Shutdown;
+
+    action thermalControl {
+        first check : CheckTemperature;
+        if check.safe then continue : ContinueOperation;
+        else stop : Shutdown;
+    }
+}
+
+// ===== Example 025: Loop action | category=actions =====
+package LoopActionExample {
+    action def Sense;
+    action def Evaluate;
+
+    action monitorLoop {
+        loop {
+            first sense : Sense;
+            then evaluate : Evaluate;
+        }
+    }
+}
+
+// ===== Example 026: State definition | category=states =====
+package StateDefinitionExample {
+    state def DeviceState {
+        state off;
+        state standby;
+        state active;
+        state fault;
+
+        transition first off then standby;
+        transition standby then active;
+        transition active then standby;
+        transition active then fault;
+    }
+}
+
+// ===== Example 027: State exhibition | category=states =====
+package StateExhibitionExample {
+    state def PumpState {
+        state stopped;
+        state running;
+        state failed;
+    }
+
+    part def Pump {
+        exhibit state pumpState : PumpState;
+    }
+}
+
+// ===== Example 028: Terminate action | category=actions =====
+package TerminateActionExample {
+    action def DetectFault;
+    action def NormalOperation;
+
+    action operate {
+        first run : NormalOperation;
+        then fault : DetectFault;
+        then terminate;
+    }
+}
+
+// ===== Example 029: Assignment action | category=actions =====
+package AssignmentActionExample {
+    private import ScalarValues::*;
+
+    part def Counter {
+        attribute value : Integer = 0;
+
+        action increment {
+            value := value + 1;
+        }
+    }
+}
+
+// ===== Example 030: Message action | category=actions =====
+package AsyncMessageExample {
+    item def AlertMessage;
+
+    action def SendAlert {
+        in item alert : AlertMessage;
+    }
+
+    action def ReceiveAlert {
+        in item alert : AlertMessage;
+    }
+
+    action alertScenario {
+        first send : SendAlert;
+        then receive : ReceiveAlert;
+    }
+}
+
+// ===== Example 031: Requirement definition | category=requirements =====
+package RequirementDefinitionExample {
+    requirement def MaxMassRequirement {
+        doc /* The system mass shall not exceed the specified maximum. */
+        attribute maxMass;
+    }
+}
+
+// ===== Example 032: Requirement usage | category=requirements =====
+package RequirementUsageExample {
+    part def Rover {
+        attribute mass;
+    }
+
+    requirement massLimit {
+        subject rover : Rover;
+        doc /* The rover shall have acceptable launch mass. */
+    }
+}
+
+// ===== Example 033: Satisfy relationship | category=requirements =====
+package SatisfyExample {
+    part def BatteryPack {
+        attribute capacity;
+    }
+
+    requirement EnduranceRequirement {
+        doc /* The system shall operate for the required mission duration. */
+    }
+
+    part def Drone {
+        part battery : BatteryPack;
+        satisfy EnduranceRequirement by battery;
+    }
+}
+
+// ===== Example 034: Requirement derivation | category=requirements =====
+package RequirementDerivationExampleSmall {
+    requirement vehicleSafety;
+    requirement brakingDistance;
+    requirement steeringControl;
+
+    derive requirement brakingDistance from vehicleSafety;
+    derive requirement steeringControl from vehicleSafety;
+}
+
+// ===== Example 035: Constraint definition | category=constraints =====
+package ConstraintDefinitionExample {
+    private import ScalarValues::*;
+
+    constraint def ElectricalPower {
+        in attribute voltage : Real;
+        in attribute current : Real;
+        out attribute power : Real;
+
+        power == voltage * current;
+    }
+}
+
+// ===== Example 036: Constraint usage | category=constraints =====
+package ConstraintUsageExample {
+    private import ScalarValues::*;
+
+    constraint def MassSum {
+        in attribute a : Real;
+        in attribute b : Real;
+        out attribute total : Real;
+        total == a + b;
+    }
+
+    part def Assembly {
+        attribute frameMass : Real;
+        attribute payloadMass : Real;
+        attribute totalMass : Real;
+
+        constraint massRollup : MassSum {
+            a = frameMass;
+            b = payloadMass;
+            total = totalMass;
+        }
+    }
+}
+
+// ===== Example 037: Calculation definition | category=calculations =====
+package CalculationExample {
+    private import ScalarValues::*;
+
+    calculation def KineticEnergy {
+        in attribute mass : Real;
+        in attribute speed : Real;
+        return attribute energy : Real = 0.5 * mass * speed * speed;
+    }
+}
+
+// ===== Example 038: Analysis case | category=analysis =====
+package AnalysisCaseExample {
+    private import ScalarValues::*;
+
+    part def Payload {
+        attribute mass : Real;
+    }
+
+    analysis def MassAnalysis {
+        subject payload : Payload;
+        objective totalMass;
+    }
+}
+
+// ===== Example 039: Verification case | category=verification =====
+package VerificationCaseExample {
+    requirement def TemperatureLimit {
+        attribute maxTemperature;
+    }
+
+    part def ThermalController {
+        attribute measuredTemperature;
+    }
+
+    verification def VerifyTemperatureLimit {
+        subject controller : ThermalController;
+        objective requirement : TemperatureLimit;
+    }
+}
+
+// ===== Example 040: Use case | category=use_cases =====
+package UseCaseExample {
+    actor operator;
+
+    use case MonitorSystem {
+        subject system;
+        objective monitorHealth;
+    }
+}
+
+// ===== Example 041: Allocation | category=allocation =====
+package AllocationExample {
+    action def Navigate;
+
+    part def FlightComputer;
+
+    allocation def FunctionToComponent {
+        end allocatedFrom : Navigate;
+        end allocatedTo : FlightComputer;
+    }
+}
+
+// ===== Example 042: Metadata definition | category=metadata =====
+package MetadataDefinitionExample {
+    metadata def SafetyCritical {
+        attribute asilLevel;
+        attribute rationale;
+    }
+
+    part def BrakeController {
+        @SafetyCritical {
+            asilLevel = "D";
+            rationale = "Controls braking torque.";
+        }
+    }
+}
+
+// ===== Example 043: Enumeration | category=enumerations =====
+package EnumerationExample {
+    enum def OperatingMode {
+        enum idle;
+        enum autonomous;
+        enum manual;
+        enum emergency;
+    }
+
+    part def Controller {
+        attribute mode : OperatingMode;
+    }
+}
+
+// ===== Example 044: Individual | category=individuals =====
+package IndividualExample {
+    part def TestBench {
+        attribute serialNumber;
+    }
+
+    individual bench_001 : TestBench {
+        attribute serialNumber = "TB-001";
+    }
+}
+
+// ===== Example 045: Occurrence | category=occurrences =====
+package OccurrenceExample {
+    occurrence def MaintenanceEvent {
+        attribute startTime;
+        attribute duration;
+    }
+
+    occurrence inspection_2026 : MaintenanceEvent;
+}
+
+// ===== Example 046: Snapshot | category=snapshots =====
+package SnapshotExample {
+    part def Battery {
+        attribute stateOfCharge;
+    }
+
+    snapshot batteryAtLaunch of Battery {
+        attribute stateOfCharge = 1.0;
+    }
+}
+
+// ===== Example 047: Timeslice | category=timeslices =====
+package TimesliceExample {
+    part def Satellite {
+        attribute orbitAltitude;
+    }
+
+    timeslice commissioningPhase of Satellite {
+        attribute orbitAltitude = 500;
+    }
+}
+
+// ===== Example 048: Variability | category=variability =====
+package VariabilityExample {
+    part def CameraModule;
+    part def ThermalCamera specializes CameraModule;
+    part def VisualCamera specializes CameraModule;
+
+    part def InspectionDrone {
+        variation part camera : CameraModule {
+            variant thermal : ThermalCamera;
+            variant visual : VisualCamera;
+        }
+    }
+}
+
+// ===== Example 049: Filtering | category=views =====
+package FilteringExample {
+    part def System {
+        part safetyController : Controller;
+        part userInterface : InterfacePanel;
+    }
+
+    part def Controller;
+    part def InterfacePanel;
+
+    view safetyView {
+        expose System::safetyController;
+    }
+}
+
+// ===== Example 050: Viewpoint | category=views =====
+package ViewpointExample {
+    viewpoint def SafetyViewpoint {
+        objective identifySafetyCriticalElements;
+    }
+
+    view safetyArchitectureView {
+        viewpoint SafetyViewpoint;
+    }
+}
+
+// ===== Example 051: Language extension | category=language_extension =====
+package LanguageExtensionExample {
+    metadata def CybersecurityRelevant {
+        attribute threatCategory;
+    }
+
+    part def Gateway {
+        @CybersecurityRelevant {
+            threatCategory = "network boundary";
+        }
+    }
+}
+
+// ===== Example 052: Dependency | category=dependencies =====
+package DependencyExample {
+    part def NavigationComputer;
+    part def GNSSReceiver;
+
+    dependency navDependsOnGnss from NavigationComputer to GNSSReceiver;
+}
+
+// ===== Example 053: Room model | category=domain_room =====
+package RoomModelExample {
+    part def Room {
+        part light[0..*] : Light;
+        part thermostat : Thermostat;
+        part door[1..*] : Door;
+    }
+
+    part def Light;
+    part def Thermostat;
+    part def Door;
+}
+
+// ===== Example 054: Camera example | category=domain_camera =====
+package CameraSystemExample {
+    part def Camera {
+        part lens : Lens;
+        part imageSensor : ImageSensor;
+        part processor : ImageProcessor;
+        port imageOut : ImagePort;
+    }
+
+    part def Lens;
+    part def ImageSensor;
+    part def ImageProcessor;
+    port def ImagePort;
+}
+
+// ===== Example 055: Flashlight example | category=domain_flashlight =====
+package FlashlightExample {
+    part def Flashlight {
+        part battery : Battery;
+        part switch : Switch;
+        part led : LED;
+        connect battery.output to switch.input;
+        connect switch.output to led.input;
+    }
+
+    part def Battery { port output : ElectricalPort; }
+    part def Switch { port input : ElectricalPort; port output : ElectricalPort; }
+    part def LED { port input : ElectricalPort; }
+    port def ElectricalPort;
+}
+
+// ===== Example 056: Packet example | category=domain_packet =====
+package PacketProcessingExample {
+    item def Packet {
+        attribute source;
+        attribute destination;
+        attribute payload;
+    }
+
+    part def Router {
+        port input;
+        port output;
+        action routePacket {
+            in item packet : Packet;
+        }
+    }
+}
+
+// ===== Example 057: Mass rollup | category=analysis_mass =====
+package MassRollupExample {
+    private import ScalarValues::*;
+
+    part def Component {
+        attribute mass : Real;
+    }
+
+    part def Assembly {
+        part frame : Component;
+        part payload : Component;
+        attribute totalMass : Real;
+
+        constraint totalMass == frame.mass + payload.mass;
+    }
+}
+
+// ===== Example 058: Vehicle architecture | category=domain_vehicle =====
+package VehicleArchitectureExample {
+    part def Vehicle {
+        part body : Body;
+        part powertrain : Powertrain;
+        part controller : VehicleController;
+    }
+
+    part def Body;
+    part def Powertrain;
+    part def VehicleController;
+}
+
+// ===== Example 059: Autonomous drone | category=domain_drone =====
+package AutonomousDroneExample {
+    part def AutonomousDrone {
+        part airframe : Airframe;
+        part propulsion[4] : Motor;
+        part flightComputer : FlightComputer;
+        part camera : Camera;
+        port telemetry : RadioPort;
+    }
+
+    part def Airframe;
+    part def Motor;
+    part def FlightComputer;
+    part def Camera;
+    port def RadioPort;
+}
+
+// ===== Example 060: Medical device | category=domain_medical =====
+package MedicalMonitorExample {
+    part def PatientMonitor {
+        part sensor : Biosensor;
+        part processor : SignalProcessor;
+        part display : Display;
+        port alarmOut : AlarmPort;
+    }
+
+    part def Biosensor;
+    part def SignalProcessor;
+    part def Display;
+    port def AlarmPort;
+}
+
+// ===== Example 061: Manufacturing cell | category=domain_manufacturing =====
+package ManufacturingCellExample {
+    part def ManufacturingCell {
+        part robot : RobotArm;
+        part conveyor : Conveyor;
+        part vision : VisionSystem;
+        ref part operator : Operator;
+    }
+
+    part def RobotArm;
+    part def Conveyor;
+    part def VisionSystem;
+    part def Operator;
+}
+
+// ===== Example 062: Rail braking system | category=domain_rail =====
+package RailBrakeSystemExample {
+    part def BrakeSystem {
+        part controller : BrakeController;
+        part actuator[4] : BrakeActuator;
+        part sensor[4] : WheelSpeedSensor;
+    }
+
+    part def BrakeController;
+    part def BrakeActuator;
+    part def WheelSpeedSensor;
+}
+
+// ===== Example 063: Satellite subsystem | category=domain_space =====
+package SatellitePowerSubsystemExample {
+    part def PowerSubsystem {
+        part solarArray[2] : SolarArray;
+        part battery : Battery;
+        part powerControlUnit : PowerControlUnit;
+        port powerBus : ElectricalPort;
+    }
+
+    part def SolarArray;
+    part def Battery;
+    part def PowerControlUnit;
+    port def ElectricalPort;
+}
+
+// ===== Example 064: Smart home | category=domain_iot =====
+package SmartHomeExample {
+    part def SmartHome {
+        part hub : HomeHub;
+        part thermostat : SmartThermostat;
+        part lock[0..*] : SmartLock;
+        part light[0..*] : SmartLight;
+    }
+
+    part def HomeHub;
+    part def SmartThermostat;
+    part def SmartLock;
+    part def SmartLight;
+}
+
