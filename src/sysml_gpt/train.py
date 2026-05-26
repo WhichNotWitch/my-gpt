@@ -5,6 +5,10 @@ from pathlib import Path
 
 import torch
 import argparse
+import csv
+import json
+from dataclasses import asdict
+from pathlib import Path
 
 from sysml_gpt.data import get_batch,load_text,train_val_split
 from sysml_gpt.model import TinyGPTLanguageModel
@@ -24,6 +28,9 @@ def parse_args():
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--no-resume", action="store_true")
     parser.add_argument("--best-checkpoint-path",default=None)
+    parser.add_argument("--log-path",default=None)
+    parser.add_argument("--config-snapshot-path", default=None)
+    parser.add_argument("--run-dir", default=None)
     return parser.parse_args()
 
 def apply_args(config: TrainConfig, args):
@@ -46,14 +53,34 @@ def apply_args(config: TrainConfig, args):
     if args.best_checkpoint_path is not None:
         config.best_checkpoint_path = args.best_checkpoint_path
 
+    if args.log_path is not None:
+        config.log_path = args.log_path
+
+    if args.config_snapshot_path is not None:
+        config.config_snapshot_path = args.config_snapshot_path
+
     if args.resume:
         config.resume = True
 
     if args.no_resume:
         config.resume = False
 
+    if args.run_dir is not None:
+        config.run_dir = args.run_dir
+        config.checkpoint_path = str(Path(args.run_dir) / "last.pt")
+        config.best_checkpoint_path = str(Path(args.run_dir) / "best.pt")
+        config.log_path = str(Path(args.run_dir) / "train_log.csv")
+        config.config_snapshot_path = str(Path(args.run_dir) / "config.json")
+        config.resume_path = config.checkpoint_path
+
     return config
 
+def save_config_snapshot(config:TrainConfig):
+    path = Path(config.config_snapshot_path)
+    path.parent.mkdir(exist_ok=True)
+
+    with path.open("w",encoding="utf-8") as f:
+        json.dump(asdict(config),f,indent=2)
 
 
 @torch.no_grad()
@@ -109,9 +136,23 @@ def save_checkpoint(
     )
 
 
+def append_log(path,step,train_loss,val_loss,best_val_loss):
+    log_path = Path(path)
+    log_path.parent.mkdir(exist_ok=True)
+
+    file_exists = log_path.exists()
+
+    with log_path.open("a",newline="",encoding="utf-8") as f:
+        writer =csv.writer(f)
+
+        if not file_exists:
+            writer.writerow(["step","train_loss","val_loss","best_val_loss"])
+        writer.writerow([step,train_loss,val_loss,best_val_loss])
+
 def main():
     args = parse_args()
     config = apply_args(TrainConfig(), args)
+    save_config_snapshot(config)
     
     text = load_text(config.input_path)
     tokenizer = CharTokenizer(text=text)
@@ -172,6 +213,8 @@ def main():
                     best_val_loss,
                 )
                 print(f"saved best checkpoint to {config.best_checkpoint_path}")
+
+            append_log(config.log_path,step,losses["train"],losses["val"],best_val_loss,)
 
         x,y = get_batch(train_data,config.batch_size,config.block_size)
         x = x.to(device)

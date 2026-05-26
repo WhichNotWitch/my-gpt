@@ -6,7 +6,9 @@ class TrainConfig:
     input_path:str = "input.txt"
     checkpoint_path:str = "checkpoints/tiny_gpt.pt"
     best_checkpoint_path : str = "checkpoints/tiny_gpt_best.pt"
-
+    resume_path:str = "checkpoints/tiny_gpt.pt"
+    log_path : str =  "runs/train_log.csv"
+    config_snapshot_path : str = "runs/config.json"
     batch_size:int =32
     block_size:int =64
     train_steps : int = 200
@@ -19,4 +21,5 @@ class TrainConfig:
     num_heads:int=4
     dropout:float =0.2
     resume:bool = True
-    resume_path:str = "checkpoints/tiny_gpt.pt"
+    run_dir: str | None = None
+    

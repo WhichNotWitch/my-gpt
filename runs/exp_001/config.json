@@ -1,0 +1,20 @@
+{
+  "input_path": "input.txt",
+  "checkpoint_path": "runs\\exp_001\\last.pt",
+  "best_checkpoint_path": "runs\\exp_001\\best.pt",
+  "resume_path": "runs\\exp_001\\last.pt",
+  "log_path": "runs\\exp_001\\train_log.csv",
+  "config_snapshot_path": "runs\\exp_001\\config.json",
+  "batch_size": 32,
+  "block_size": 64,
+  "train_steps": 300,
+  "eval_interval": 100,
+  "eval_iters": 20,
+  "learning_rate": 0.0003,
+  "n_embed": 64,
+  "n_layer": 4,
+  "num_heads": 4,
+  "dropout": 0.2,
+  "resume": false,
+  "run_dir": "runs/exp_001"
+}
