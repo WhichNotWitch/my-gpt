@@ -1,0 +1,309 @@
+=== Prompt 1 ===
+package 
+
+=== Output 1 ===
+package Vehicle;
+	private import Masser {
+		in substem system fuelControlller.creallle : FuelControlller : TimePort {
+                                                                                                              }
+         
+                                                                    
+
+=== Prompt 2 ===
+part def 
+
+=== Output 2 ===
+part def FuelCmdPort {
+                  }
+    }
+              part def Sing;
+            }
+                                        attribute :>> mass;    }
+                            }
+             attribute def Vehicle_2. TransmissionTorque'.mass. */
+                           }                           
+
+=== Prompt 3 ===
+attribute 
+
+=== Output 3 ===
+attribute :>> mass {
+					attribute : Subscribe_c1 = 1;
+			}
+		part def Pref :>> def Signal {
+						part vehicleController {
+				attribute def 'Port_c1:>> sord {
+								attribute part def StarValues::*;
+				}
+	
+			part drivate
+			action def EngineCharge: Provide {
+				port part def Scheal {
+					in a require
+
+=== Prompt 4 ===
+action def 
+
+=== Output 4 ===
+action def Engine = vehicleModel = thength otw subjectured;
+		
+		action def EngineCholer {
+			in def 'Strofinestry {
+				in substervice scaly;
+			
+				part semss : Vehicle {
+						attribute shot : Spart;
+						then off the subscription_requirement to transmics : Mass;
+			part def Vehicle {
+								part :>>> co
+
+=== Prompt 5 ===
+state def 
+
+=== Output 5 ===
+state def Class :> straing;
+		action def VehicleController.provideTorque'.soutSeturne;
+		attribute :>> somage;
+					attribute :>>> part {
+				action = systarge;
+		
+				}
+			} 
+		
+			attribute def 'State torque';
+						
+				attribute part '1;
+				}
+				
+			attribute def Vehicle : Vehicle;
+					
+			part ref sen
+
+=== Prompt 6 ===
+requirement def 
+
+=== Output 6 ===
+requirement def FuelFocation : Comantry;
+						
+				port server_dest : Servervent;
+			
+			private import 'Value Schation the StarValues : StarValue;
+			part def SubsystemSpeed {
+			/*
+		
+		 * A stateribute shaftPort targer of;
+		
+		action def 'VehicleStarts: EngineStates::Scons::*;
+	
+		
+	action def 'Stribute Statur
+
+=== Prompt 7 ===
+constraint def 
+
+=== Output 7 ===
+constraint def TemelEValue;
+		}
+		}
+	package ScalarValue {
+		part :>> elered;
+		part def Power {
+			public : Subscriptesion {
+			part :>> def Vehicle_b_c1: Vehicle;
+				part def Signal :>> server_def {
+						abje subsystem = mall assitems, shot of to o the shaftA attribute toral transmisition the engine to o serve
+
+=== Prompt 8 ===
+calc def 
+
+=== Output 8 ===
+calc def Vehicle {
+						attribute redefines = vehicle_target.server_request :>> semass {								:>> systrvent = theave tarWheelComdFuelTe;
+					
+					attribute attribute : Vehicle {
+						attribute the shaftPort : Signal : Fuel;
+			}
+
+		
+			attribute call : Vehicle;
+			
+		part system : Sparture;
+		
+		
+	}
+		
+
+=== Prompt 9 ===
+connection def 
+
+=== Output 9 ===
+connection def EngineStatures the to the strubshaftPort;
+			}
+	}
+		}
+	
+			part def Vehicle :> part {
+			action providePort {
+						part subscribe_rededSpedPort vehicle_requirement {
+					part sonerBehave {
+					action straind :> mass Scelerity;
+			
+			part vehicle {
+			part publicale {
+					part vehicle : Sconsume
+
+=== Prompt 10 ===
+interface def 
+
+=== Output 10 ===
+interface def Com { public publish : Power; 
+							}
+			
+				then end to start outal setrver_c1.dellerver_requirement the torque' {
+						then subject : Vehicle : VehicleControlller = subscribe shot accepte the the ordef out to a the the of the action specifecienal' the ty to e a of a to the efect on train of th
+
+=== Prompt 11 ===
+private import 
+
+=== Output 11 ===
+private import ScalarValue:Requirement {
+		part def FuelCanser;
+		
+		part vehicleState {
+					part vehicle_t1 {
+					part :>> conntraintion {
+				in provide : FuelClEcommentementSpeedSpeed :> soumal {
+						:>>> sensemssal;
+									
+				acction a = vehicle_c1: String[0.....mmmm to to ell :>> torque {
+            
+
+=== Prompt 12 ===
+metadata 
+
+=== Output 12 ===
+metadata : MassVehicleStatems {
+							  * The oun to subscribed to torque to the spart semend to stem to subsystribe ::> SpeedSequence {
+		 * the state of the in a a the state end the the at to to orqueGenent occurrrrence and action effect onsurred to the short.
+					 */
+			 * then ormalle ass action the to
+
+=== Prompt 13 ===
+ref 
+
+=== Output 13 ===
+ref tem : Time;
+		}
+		
+		part def VehicleMass {
+			part def VehicleController_tallEcomy {
+					attribute def :>> mass;
+					
+			part :>>> caus = thankAxleAssysis : MassValue;
+			
+			attribute def Scent {
+			antion def Scale :> provide {
+				action def 'Axle.satemble' {
+							then ansist of elersedSpeed
+
+=== Prompt 14 ===
+in 
+
+=== Output 14 ===
+in state the action sets of engineCommal;
+	}
+		
+	part def Per;
+			
+		
+	action vehicle :>> subsystemSpace {
+			attribute :>>> systates {
+					 * in the oparts souted tandPort;
+					
+			then driver_reded shativion toper {
+				part def 'VehicleSprt 'Senal;
+		
+				in spsysysicy : Setatering;
+			
+		intem :>
+
+=== Prompt 15 ===
+out 
+
+=== Output 15 ===
+out strubstate to server_b a the returnction to the
+			 * and atthat torque: Ally ation tra to engineTy to shot end targe as attribute the the to ef aus the tat on the therforment;
+		
+			part reanslis : Vehicle {
+					abind action the : Colord;
+		
+}
+<|endoftext|>
+package 'Part Def Destem {
+	part def Def
+
+=== Prompt 16 ===
+package Vehicle {
+    part def 
+
+=== Output 16 ===
+package Vehicle {
+    part def Engine {
+                        }
+            part def Engine :>> publish_mass;
+                    }
+            }
+            part part SysML:::SemassMassValue;
+                andyis :> straing = 20 00[mmm]; }
+            attribute : FuelCmdPort;
+          attribute mass {
+                      
+
+=== Prompt 17 ===
+package Vehicle {
+    action def 
+
+=== Output 17 ===
+package Vehicle {
+    action def EngineTormansmical {
+                                              and statedStature;
+           }
+                  
+          attribute :>> semalMassValue;
+                                                                      }       action and an istation of the o the the engine of om the the ap 
+
+=== Prompt 18 ===
+part def Vehicle {
+    attribute 
+
+=== Output 18 ===
+part def Vehicle {
+    attribute mag {
+                                                       }
+                                                                                                           }                                                                  part drivedePht:Public {
+                                     }
+
+=== Prompt 19 ===
+action def Compute {
+    in 
+
+=== Output 19 ===
+action def Compute {
+    in                              }
+                                            attribute :>> semandFuelEction {
+               public       attribute :>> rearA {
+                                                      } 
+                                                                        attribute def
+
+=== Prompt 20 ===
+action def Compute {
+    out 
+
+=== Output 20 ===
+action def Compute {
+    out                                     attribute :>> sementerver_calarPort::*; 
+                                        
+                      }              }
+                                                                           }
+             }
+                                         }         

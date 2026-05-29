@@ -1,0 +1,45 @@
+---
+package 
+---
+part def 
+---
+attribute 
+---
+action def 
+---
+state def 
+---
+requirement def 
+---
+constraint def 
+---
+calc def 
+---
+connection def 
+---
+interface def 
+---
+private import 
+---
+metadata 
+---
+ref 
+---
+in 
+---
+out 
+---
+package Vehicle {
+    part def 
+---
+package Vehicle {
+    action def 
+---
+part def Vehicle {
+    attribute 
+---
+action def Compute {
+    in 
+---
+action def Compute {
+    out 

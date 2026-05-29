@@ -173,6 +173,7 @@ def main():
         num_heads=config.num_heads,
     )
     model = model.to(device)
+    print("Model device:", next(model.parameters()).device)
 
     optimizer = torch.optim.AdamW(model.parameters(),lr=config.learning_rate)
     best_val_loss = float("inf")
