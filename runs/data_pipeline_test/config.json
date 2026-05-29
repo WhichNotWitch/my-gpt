@@ -1,0 +1,20 @@
+{
+  "input_path": "data/processed/train.txt",
+  "checkpoint_path": "runs\\data_pipeline_test\\last.pt",
+  "best_checkpoint_path": "runs\\data_pipeline_test\\best.pt",
+  "resume_path": "runs\\data_pipeline_test\\last.pt",
+  "log_path": "runs\\data_pipeline_test\\train_log.csv",
+  "config_snapshot_path": "runs\\data_pipeline_test\\config.json",
+  "batch_size": 32,
+  "block_size": 64,
+  "train_steps": 3000,
+  "eval_interval": 100,
+  "eval_iters": 20,
+  "learning_rate": 0.0003,
+  "n_embed": 64,
+  "n_layer": 4,
+  "num_heads": 4,
+  "dropout": 0.2,
+  "resume": true,
+  "run_dir": "runs/data_pipeline_test"
+}

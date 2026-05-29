@@ -31,6 +31,7 @@ def parse_args():
     parser.add_argument("--log-path",default=None)
     parser.add_argument("--config-snapshot-path", default=None)
     parser.add_argument("--run-dir", default=None)
+    parser.add_argument("--input-path", default=None)
     return parser.parse_args()
 
 def apply_args(config: TrainConfig, args):
@@ -73,6 +74,8 @@ def apply_args(config: TrainConfig, args):
         config.config_snapshot_path = str(Path(args.run_dir) / "config.json")
         config.resume_path = config.checkpoint_path
 
+    if args.input_path is not None:
+        config.input_path = args.input_path
     return config
 
 def save_config_snapshot(config:TrainConfig):
