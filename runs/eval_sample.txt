@@ -1,0 +1,348 @@
+=== Prompt 1 ===
+package 
+
+=== Output 1 ===
+package {	private shaftPort_c1: ShaftPort_d;
+		port def Transmission;
+				
+			part def Shoppic {
+				port port : ProvidePower;
+				elf publish {
+					port sort subscribe : Subscribe {
+							in event : TimePort;
+					
+								port subscribe_request : Subscribe;
+									then subscribe setSpeedPort : Subscri
+
+=== Prompt 2 ===
+part def 
+
+=== Output 2 ===
+part def EngineTorque;
+			
+			attribute def Subscribe_returnalitems;
+			
+		part def Subscribing;
+			part def Wheel[1];
+			
+				part server :>> selectSpatialPort.redPowerToRoadPort {
+				port ref port;
+			}
+			
+		part vehicle_b :> serviceDishator[1] {
+				port :>> publish[0..*];
+			}
+			
+		}
+		part def Engine
+
+=== Prompt 3 ===
+attribute 
+
+=== Output 3 ===
+attribute : MassValue;
+		
+		part def VehicleControlInterfaces: Space;
+			
+			part def Traing;
+			
+			port def WarPart {
+					attribute serviceDistanceProduct;
+				port ref :> powerTral;
+			}
+						part def Engine;
+				part rearWheel[1] :>> compositePort: Product;
+				
+				perform def Publish_returnallish_set;
+
+=== Prompt 4 ===
+action def 
+
+=== Output 4 ===
+action def Discension {
+			in vehicle_c1 {
+				in item : ISQ::*;
+				in engine;
+					out item action : Time;
+			
+				in driver_interfaceTorque: PublicationTorque;
+			}
+			
+		part def Vehicle {
+			part publication;
+			
+			part def EngineStraint {
+			part subscribe subscribe.subscribe_request : TopicalPort;
+				
+
+=== Prompt 5 ===
+state def 
+
+=== Output 5 ===
+state def SensorStates {
+			 /*
+				 */
+				 * The stervices a constraint service of that is start to the the action the shape the stansmatics.
+				 */
+			}
+		
+			part starting {@Safety : MassValue;
+			part def Time;
+		}
+		part def Sitial {
+			part : LingthValue {
+				part : Torque;
+	}
+			part def PowerPort {
+
+=== Prompt 6 ===
+requirement def 
+
+=== Output 6 ===
+requirement def Example' {
+						
+			state off;
+						accept 'Stanted to 'vehicle trailer'
+							 */
+				 */
+								 * subsemblication 'traile' the the antransmissis the an total acce production of ther an of the to an engine
+								 */
+					}
+							
+					part server_b.refsonsurce_returnall {
+								perform se
+
+=== Prompt 7 ===
+constraint def 
+
+=== Output 7 ===
+constraint def Signal;
+						
+				transfermation station states' {
+		}
+								
+				/*
+					 * This interface action of the sub-cription a a subsystem of the securitions
+					 * the server.
+				 */
+
+							 * A 'vehicle.
+			} the productide power acture'::*;
+			}
+		
+			flow 'provide def Test';
+		}
+		
+		flow 'vehic
+
+=== Prompt 8 ===
+calc def 
+
+=== Output 8 ===
+calc def Selections' {
+						 * the 'provide server';
+						 * This is is a the is is antection that specification of the setate acception to a actomentext is a serviceData atoribute subject :> simeVehicle {
+        analysisMass constraint : MassValue[5] }
+               
+                   attribute :>> mas
+
+=== Prompt 9 ===
+connection def 
+
+=== Output 9 ===
+connection def C {
+			// The prof a perfor to shoot ithot to shaftPort.
+				 */
+					
+				port from shaftPort_callify:Port {
+						port resubscribe_returce_request;
+						port publicationPort : Publish {
+									part ref reation;
+				}
+							
+								part frontWheelToRoadPort: Wheel[1] {
+				/* 'vehicle sense se
+
+=== Prompt 10 ===
+interface def 
+
+=== Output 10 ===
+interface def Signational;
+		
+			part def Vehicle {
+				part engine :>> publicationPort;
+		}
+			
+			part consumer.deliver {
+			port def Transmission : ShaftPort;
+			
+			part def Vehicle {
+				port :>> def Shapple {
+				port : ~APShaftPort: Torque;
+			}
+			}
+		
+		part def Publication {
+				part from : ~Publish_ref
+
+=== Prompt 11 ===
+private import 
+
+=== Output 11 ===
+private import PublicationRequirement {
+		attribute ref : Real;
+		
+		part def WiskA : AHFNorway_An;
+		
+		part def Engine;
+		action : ClassificationConsumponent{
+		attribute mass == mass);
+		
+		part def Vehicle {
+			attribute :>> distanconstraint :> ScalarQuantity;
+				
+			part def Transmission {
+				attribute :>> 
+
+=== Prompt 12 ===
+metadata 
+
+=== Output 12 ===
+metadata ::*;
+	attribute def MassValue;
+	attribute def Engine {
+		attribute def ScalarValues: MassValue;
+		action def Effection {
+		attribute def Subscribe;
+		part def Transmission {
+			attribute mass :>> massValue;
+			}
+		
+		part def Subscribe_event :> service :>> subscribe setSpationPort {
+			part :>> serv
+
+=== Prompt 13 ===
+ref 
+
+=== Output 13 ===
+ref EngineStates;
+			
+			part def Engine;
+				part def WheelToRoadPublish.part;
+				port subscribe_request;
+				port request:>> server_2[1] {
+				publish {
+					event occurrence server_2.respwrPublish_message.sensource_event server_ever_message servery.serviceDerviceDiscovice_event;
+						event vehicle_
+
+=== Prompt 14 ===
+in 
+
+=== Output 14 ===
+in : TimeValue;
+		
+		flow 'profiler power': Selenction 'vehicle'::*;
+		
+		state 'vehicle states': 'vehicle1_c2' {
+			doc
+		/*
+			 */
+		
+		part server_2.servicePwrPort {
+				attribute refines : Appler;
+				private action def FuelCommanationConstraint {
+				part ref : PublicationPort {
+				port :>> subsc
+
+=== Prompt 15 ===
+out 
+
+=== Output 15 ===
+out is a parallication {
+			in in scene;
+			
+	}
+	
+		part def Transmission {
+			port :>> source {
+			end : Infor : Configus :>> driveshaftPort;
+		}
+		
+		action def ShaftPort_d{
+			port def TraingCmdPort;
+			
+			action def Subscribe_request;
+			part def Tootorque::> Torque;
+				part def Engine;
+		}
+		
+		p
+
+=== Prompt 16 ===
+package Vehicle {
+    part def 
+
+=== Output 16 ===
+package Vehicle {
+    part def EngineStates {
+            part def Vehicle {
+                    attribute :>> mass = 0 [mm];
+                  part def Trailer :> MassValue;
+                }
+            part def EngineStraint{
+                      attribute mass :> subscribe_m {
+                        port subscribe :>> count
+
+=== Prompt 17 ===
+package Vehicle {
+    action def 
+
+=== Output 17 ===
+package Vehicle {
+    action def EngineTest {
+               port def Engine {
+                                port def FuelPort;
+                             publishitem :>> lugNutchPort;
+                              }
+                            port def Publication {
+                           part def Engine;
+                 
+
+=== Prompt 18 ===
+part def Vehicle {
+    attribute 
+
+=== Output 18 ===
+part def Vehicle {
+    attribute mainter = server_message metadata ::*;
+                 attribute def Vehicle {
+                      attribute mass :>> lugNutchPowerTorque;
+                           attribute doc
+                       attribute requirementReff;
+                           }
+                   }
+                p
+
+=== Prompt 19 ===
+action def Compute {
+    in 
+
+=== Output 19 ===
+action def Compute {
+    in def C :> Position : ScalarQuantities {
+                                                                                           }
+                                                                                                                                                                        
+
+=== Prompt 20 ===
+action def Compute {
+    out 
+
+=== Output 20 ===
+action def Compute {
+    out def Manumetadata :> System;
+        }
+                 action def FuelEconomy {
+                       in publication :>> subscribe { :>> mass; :>> mass : MassValue = 50 [mm];       }
+                                 :>> mass = 15[mm];
+                 :>> clutchPort = 0.55[meta];
+                  

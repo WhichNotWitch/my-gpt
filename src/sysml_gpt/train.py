@@ -32,6 +32,10 @@ def parse_args():
     parser.add_argument("--config-snapshot-path", default=None)
     parser.add_argument("--run-dir", default=None)
     parser.add_argument("--input-path", default=None)
+    parser.add_argument("--n-embed", type=int, default=None)
+    parser.add_argument("--n-layer", type=int, default=None)
+    parser.add_argument("--num-heads", type=int, default=None)
+    parser.add_argument("--dropout", type=float, default=None)
     return parser.parse_args()
 
 def apply_args(config: TrainConfig, args):
@@ -76,6 +80,18 @@ def apply_args(config: TrainConfig, args):
 
     if args.input_path is not None:
         config.input_path = args.input_path
+
+    if args.n_embed is not None:
+        config.n_embed = args.n_embed
+
+    if args.n_layer is not None:
+        config.n_layer = args.n_layer
+
+    if args.num_heads is not None:
+        config.num_heads = args.num_heads
+
+    if args.dropout is not None:
+        config.dropout = args.dropout
     return config
 
 def save_config_snapshot(config:TrainConfig):
@@ -118,10 +134,9 @@ def save_checkpoint(
         best_val_loss,
 ):
     checkpoint_path = Path(path)
-    checkpoint_path.parent.mkdir(exist_ok=True)
+    checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
 
-    torch.save(
-        {
+    checkpoint ={
             "model_state_dict":model.state_dict(),
             "vocab_size":tokenizer.vocab_size,
             "stoi":tokenizer.stoi,
@@ -133,10 +148,11 @@ def save_checkpoint(
             "dropout":config.dropout,
             "optimizer_state_dict":optimizer.state_dict(),
             "step":step,
-            "best_val_loss":best_val_loss,
-        },
-        checkpoint_path,
-    )
+            "best_val_loss":best_val_loss,}
+    
+    tmp_path = checkpoint_path.with_suffix(checkpoint_path.suffix + ".tmp")
+    torch.save(checkpoint, tmp_path)
+    tmp_path.replace(checkpoint_path)
 
 
 def append_log(path,step,train_loss,val_loss,best_val_loss):
@@ -165,32 +181,44 @@ def main():
 
     train_data,val_data = train_val_split(data=data)
 
+    checkpoint = None
+    start_step = 0
+    best_val_loss = float("inf")
+    
+    if config.resume and Path(config.resume_path).exists():
+        checkpoint = torch.load(
+            config.resume_path,
+            map_location=device,
+            weights_only=False,
+    )
+
+    config.block_size = checkpoint["block_size"]
+    config.n_embed = checkpoint["n_embed"]
+    config.n_layer = checkpoint["n_layer"]
+    config.num_heads = checkpoint["num_heads"]
+    config.dropout = checkpoint["dropout"]
+
+    start_step = checkpoint.get("step", 0)
+    best_val_loss = checkpoint.get("best_val_loss", float("inf"))
+
+    print(f"resume from {config.resume_path} at step {start_step}")
     model = TinyGPTLanguageModel(
         vocab_size=tokenizer.vocab_size,
         n_embed=config.n_embed,
         block_size=config.block_size,
         n_layer=config.n_layer,
         num_heads=config.num_heads,
+        dropout=config.dropout,
     )
     model = model.to(device)
     print("Model device:", next(model.parameters()).device)
 
-    optimizer = torch.optim.AdamW(model.parameters(),lr=config.learning_rate)
-    best_val_loss = float("inf")
-
-    start_step=0
-    if config.resume and Path(config.resume_path).exists():
-        checkpoint = torch.load(config.resume_path,map_location=device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
+    if checkpoint is not None:
         model.load_state_dict(checkpoint["model_state_dict"])
 
         if "optimizer_state_dict" in checkpoint:
             optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-
-        start_step = checkpoint.get("step",0)
-        best_val_loss = checkpoint.get("best_val_loss",float("inf"))
-        print(f"resume from {config.resume_path} at step {start_step}")
-
-    
     
     
     end_step = start_step + config.train_steps

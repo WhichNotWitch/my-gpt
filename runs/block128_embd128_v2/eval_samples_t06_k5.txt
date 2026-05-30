@@ -1,0 +1,250 @@
+=== Prompt 1 ===
+package 
+
+=== Output 1 ===
+package {
+		in publication : Pication;
+			in public import 'Publications'::*;
+			in public import 'Port 'Propert Example'::*;
+		
+		part def Vehicle {
+			attribute : String;
+		
+		part def Subscribe[1];
+		part 
+
+=== Prompt 2 ===
+part def 
+
+=== Output 2 ===
+part def System {
+		part vehicle {
+			port : Vehicle;
+				part port : ~Subscribe : Publish_red;
+				part event publicationPort: Subscribe;
+			
+			part serverBehavior.subscribe_event;
+			end serviceDiscription 
+
+=== Prompt 3 ===
+attribute 
+
+=== Output 3 ===
+attribute : Real;
+	}
+	
+	part def Vehicle {
+		part def Vehicle {
+			part def FuelCmdPort;
+		part def FuelCmd;
+		part def Torque;
+		part def Elight;
+		part def TrailerToRoadPort{
+				port port : ~Port {
+				port 
+
+=== Prompt 4 ===
+action def 
+
+=== Output 4 ===
+action def Subscribe_request;
+				
+				then out publish_returnal;
+					then shaftPort_d: ShotPort;
+					
+					flow flow shaftPort.fuelEfftPort;
+				}
+		}
+				
+					part ref :>> sensedSensedSpeed;
+				provide def
+
+=== Prompt 5 ===
+state def 
+
+=== Output 5 ===
+state def 'Allower' {
+			attribute server_message : Server_entSpeed;
+				
+				subject vehicle_b.setSpeedSpeedSpeedPort;
+			
+				part ref :>> server.service {
+					port :>> service : SpeedPort;
+				perform servi
+
+=== Prompt 6 ===
+requirement def 
+
+=== Output 6 ===
+requirement def EngineStatedRequirement {
+						/*
+				 * The action inted the the is as the is as isten the a controller an the sorque'. */
+						
+							/*
+				 * 'vehicle the products the apshot the that the speci
+
+=== Prompt 7 ===
+constraint def 
+
+=== Output 7 ===
+constraint def Definitions' {
+								 * This is is states a subserface a seturces the state the the states aft or engine the sensed the an setate that signal'
+			 * the shape apshaft the state and antesiation and o
+
+=== Prompt 8 ===
+calc def 
+
+=== Output 8 ===
+calc def Example' {
+		part def Wheel;
+			part def Engine;
+			part def WheelToRoadPhy: ToRoadPort;
+			
+		part def TrailerTorque;
+			part frontAxleAssembly {
+			part def AxleAssembly: AxleAssembly {
+				part req
+
+=== Prompt 9 ===
+connection def 
+
+=== Output 9 ===
+connection def Example {
+			part def Trailer {
+					in action : Time;
+							port 'generateTorque;
+								
+							accept 'vehicle states' {
+										// 'vehicle states';
+										}
+								
+													then engi
+
+=== Prompt 10 ===
+interface def 
+
+=== Output 10 ===
+interface def Signal {
+					attribute rearWheel[1] :>> sensed;
+					}
+								
+				state subscribe_message :>> server_request;
+							then server.serviceDiscribe_requirement {
+						event event sensedSensedSensense
+
+=== Prompt 11 ===
+private import 
+
+=== Output 11 ===
+private import Parts{
+		private import ISQ::*;
+		public import ScalarQuantities::*;
+		port def ScalarValues::*;
+		
+		port def Publish {
+			port publicationPort {
+			port : Publish {
+				port publicationPort {
+				po
+
+=== Prompt 12 ===
+metadata 
+
+=== Output 12 ===
+metadata {
+		attribute def Server :> Service {
+			attribute mass = 10 [kg];
+			attribute :>> deliver;
+		
+			attribute def Signal;
+			attribute def FuelCommandFuelCommandMeass::*;
+		
+		metadata def Subscribe {
+
+
+=== Prompt 13 ===
+ref 
+
+=== Output 13 ===
+ref Transmission : StraightLightLing;
+			
+			action send :>> sensedSpeedSensor;
+			
+			state off;
+					
+				state 'setSpeed' : 'vehicle1';
+							attribute def 'States';
+				then 'vehicle to 'vehicle 'veh
+
+=== Prompt 14 ===
+in 
+
+=== Output 14 ===
+in def SensedSpeed;
+				
+								then 'performance'.'vehicle trailer 'generall to to server service'.service to to service.server.driver.server_event;
+							
+							then event server_b.setSpeedServer.se
+
+=== Prompt 15 ===
+out 
+
+=== Output 15 ===
+out : Time;                                                                                                                          }
+                                                                     
+
+=== Prompt 16 ===
+package Vehicle {
+    part def 
+
+=== Output 16 ===
+package Vehicle {
+    part def Publication {
+                       attribute def Cart;
+                                 public import ISQ::*;
+                     port port : Port;
+                         }
+                     p
+
+=== Prompt 17 ===
+package Vehicle {
+    action def 
+
+=== Output 17 ===
+package Vehicle {
+    action def EngineStateStates {
+                  attribute def Tire:> Trailer;
+                attribute def Subscribe_requirement :>> subscribe_b.subscribe_message;
+                    }
+                       
+
+=== Prompt 18 ===
+part def Vehicle {
+    attribute 
+
+=== Output 18 ===
+part def Vehicle {
+    attribute :>> deliver :> ISQ::massValue;
+                                      attribute def Real;
+                       attribute def Subscribe_event :>> serviceDiscribe_event {
+                              
+
+=== Prompt 19 ===
+action def Compute {
+    in 
+
+=== Output 19 ===
+action def Compute {
+    in def SensedSpeedSensor[1] {
+                                                                                                                                                                             
+
+=== Prompt 20 ===
+action def Compute {
+    out 
+
+=== Output 20 ===
+action def Compute {
+    out def Publication :> Subscribe {
+                                              attribute mass :>> ISQ::mass;
+                                                              :>> baseType = 0 000 [mm];
+    

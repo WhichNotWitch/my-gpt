@@ -1,0 +1,252 @@
+=== Prompt 1 ===
+package 
+
+=== Output 1 ===
+package ScalarValues::*;
+	package Picture;
+	
+	part def Vehicle_c1.delivery;
+	part def Auto {
+			action part :>> c1 {
+			andy;
+		
+			action def Shoot;
+		
+		
+			accept def SignalMass;
+		
+		accept def FuelTankCo
+
+=== Prompt 2 ===
+part def 
+
+=== Output 2 ===
+part def Shapse {
+		part vehicle1_c1: Vehicle;
+		
+		part def FuelCmdPort {
+			action deltate : Accelary;			part sootates : ShaftControll {
+							accept def Part;
+				
+				then and of server_cevent sendSpeed :
+
+=== Prompt 3 ===
+attribute 
+
+=== Output 3 ===
+attribute statedSpeed;
+			
+		abstract a def Allections {
+			in public import Scene;
+			
+				action acceptene 'AxleAsssembly { action or substration states Status to to tattribute setSpeed action of the inderfac
+
+=== Prompt 4 ===
+action def 
+
+=== Output 4 ===
+action def Subsystems : SpeedValues {
+			in item : MassValue = massValue = 2200000;
+		}
+	
+			
+		part systems :> cruisponer;
+		active server_redefinity {
+					istransfection 'vehicle-1' {
+			public import ScalarV
+
+=== Prompt 5 ===
+state def 
+
+=== Output 5 ===
+state def Effection an of Server_1.sevent;
+		
+		part def StartSensed;
+			
+			action def A {
+					part def Signal {
+				part :>> parts : Vehicle_1.mposition {
+					port :>> engine;					}
+									
+			part : Alla
+
+=== Prompt 6 ===
+requirement def 
+
+=== Output 6 ===
+requirement def Endined : Acceleration;
+		
+		part def Acceleration {
+				in def Autom : Meturnal;
+			part setSpecy : A;
+		
+			action def Signity {
+				part :>> controller : Vehicle {
+				in serverBehavior.shaftPort.v
+
+=== Prompt 7 ===
+constraint def 
+
+=== Output 7 ===
+constraint def Service {
+		/*
+			 /*
+	 * Analysis constraint subsystems an a the soonse the a is the shaps to subsystems of the is a the on setring shoaftAxle.
+			 * The of straint the shape of traileTorque: Torque 
+
+=== Prompt 8 ===
+calc def 
+
+=== Output 8 ===
+calc def Controlor {
+					perform service_b.port {
+					in subscribery : Vehicle { in scribe_tave : Subscribe_request = v accept;
+		
+		port part def ShapedPort.deliver_1.vehicle1_t1.shaftPort {
+				part server
+
+=== Prompt 9 ===
+connection def 
+
+=== Output 9 ===
+connection def Vehicle { in in import ScalarValues::*;
+			attribute def Carger.delistruch = 150[mmmm];
+		
+		part def Vehicle_c1::*;
+		privation def Signal;
+		part vin {
+			part def Provide {
+				in a def VehicleCont
+
+=== Prompt 10 ===
+interface def 
+
+=== Output 10 ===
+interface def Sign {
+				/*
+				 * Thitch in a s thates accept acceleration to to the the stanced a impled as of a and transmissions a countroller e to engine seturnalll : Sheel;
+			
+								then accept sensedSense
+
+=== Prompt 11 ===
+private import 
+
+=== Output 11 ===
+private import ScalarValues::*;
+	private import Production {
+			part :>> composited : Sparts;
+		part def Vehicle_c1.deliver_c :> shaftPort_dPhysical;
+			}
+		
+	
+				
+				stransition 'proded Struction { in part speciv
+
+=== Prompt 12 ===
+metadata 
+
+=== Output 12 ===
+metadata defines on to state indindifinition a connect of the is the an the efrence send appicy is the send efrence an the is a action of the effecurrence to to to transmissions: System;
+		}
+		
+		antribute act
+
+=== Prompt 13 ===
+ref 
+
+=== Output 13 ===
+ref Torque; in occurre : Vehicle;
+		action def Focus {
+			/*
+			 * Signerate def the is that the state isped a a connser operation action the engine a accuse of the ithe spart test 'perface to senge a Spa
+
+=== Prompt 14 ===
+in 
+
+=== Output 14 ===
+in def State {
+				in max;
+					
+			action def Vehicle : Vehicle {
+				port publish_c = vehicle1_b : Product;
+		}
+		
+		part def Product;
+		
+		accept vehicle_b.source_c1 : Subscribe_ring;
+		}
+		part publi
+
+=== Prompt 15 ===
+out 
+
+=== Output 15 ===
+out : TranslationRoceition {
+		in mass : Fransition = 100 [2];
+	
+			attribute def FuelCmd {
+						part :>> pishall;
+		}
+	}
+	
+	
+	part def Accenerits {
+			part semblect :>> dylivery {
+			asserve : Subsystem
+
+=== Prompt 16 ===
+package Vehicle {
+    part def 
+
+=== Output 16 ===
+package Vehicle {
+    part def Public {
+    public import Spart;
+                           attribute def Cart;
+
+                                                   part send attribute :>> mass {
+            }
+                      
+
+=== Prompt 17 ===
+package Vehicle {
+    action def 
+
+=== Output 17 ===
+package Vehicle {
+    action def FuelEconomyRequirement;
+                                  part def Parts:> vehicle_c1_c1;
+                                                                                  part def ShaftPort.fuelCmdPo
+
+=== Prompt 18 ===
+part def Vehicle {
+    attribute 
+
+=== Output 18 ===
+part def Vehicle {
+    attribute def Action : MassValue;
+                             in item stand sems orer a itempacion subsems and of senst server_to part to engine to an train a the is theature server. */
+			
+								 */						
+	
+
+=== Prompt 19 ===
+action def Compute {
+    in 
+
+=== Output 19 ===
+action def Compute {
+    in doccurre :> ShaftPort;
+                                                attribute : Vehicle {
+	                                                                                            part def FuelC
+
+=== Prompt 20 ===
+action def Compute {
+    out 
+
+=== Output 20 ===
+action def Compute {
+    out def FuelController : Transmission;
+                                          attribute mass = 2;
+                   part constraint : Production {
+                                                     

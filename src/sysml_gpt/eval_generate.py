@@ -16,7 +16,7 @@ def load_prompts(path:str) ->list[str]:
 
 
 def load_model(checkpoint_path:str,device:str):
-    checkpoint=torch.load(checkpoint_path,map_location=device)
+    checkpoint=torch.load(checkpoint_path,map_location=device,weights_only=False,)
 
     model = TinyGPTLanguageModel(
         vocab_size=checkpoint["vocab_size"],
