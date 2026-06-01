@@ -7,6 +7,7 @@ import torch
 import argparse
 import csv
 import json
+import time
 from dataclasses import asdict
 from pathlib import Path
 
@@ -157,10 +158,20 @@ def save_checkpoint(
             "step":step,
             "best_val_loss":best_val_loss,}
     
-    tmp_path = checkpoint_path.with_suffix(checkpoint_path.suffix + ".tmp")
-    torch.save(checkpoint, tmp_path)
-    tmp_path.replace(checkpoint_path)
+    tmp_path = checkpoint_path.with_name(
+        f"{checkpoint_path.name}.{step}.tmp"
+    )
+    torch.save(checkpoint,tmp_path)
 
+    for attempt in range(10):
+        try:
+            tmp_path.replace(checkpoint_path)
+            break
+        except PermissionError:
+            if attempt == 9 :
+                raise
+            print(f"checkpoint replace blocked, retrying {attempt + 1}/10...")
+            time.sleep(0.5)
 
 def append_log(path,step,train_loss,val_loss,best_val_loss):
     log_path = Path(path)

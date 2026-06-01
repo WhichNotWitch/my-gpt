@@ -1,0 +1,396 @@
+=== Prompt 1 ===
+package 
+
+=== Output 1 ===
+package '::*;
+	private import 'Power'::*;
+	
+	part def Classembstraint {
+		part def 'Traint vehicle : VehicleMassConstraint {
+			in partMasses = (partalMasses = (massLimitchassisMass);
+			in massReqd mass);
+			in massLimitations = massLimitmass = massLimitialMasses = massValue;
+			in massLenginitialMassValue;
+		}
+		
+		part vehicleMassMass : MassValue;
+		}
+	
+
+=== Prompt 2 ===
+part def 
+
+=== Output 2 ===
+part def Wheel { :>> transmission {
+				out transmission.mass;
+				in wheelTorque;
+				}
+			}
+		}
+		
+		part def Transmission {
+				entry {
+				in ref :>> templify {
+					out rearAxleAssembly {
+				drivePwrPort: Resumpturn_b {
+					in fuelCmd;
+					in attribute d;
+					in redefines = ce = ccitch :>> dosite;
+			}
+
+=== Prompt 3 ===
+attribute 
+
+=== Output 3 ===
+attribute def OutReal;
+	}
+	
+	part def VehicleController {
+		attribute def 'Vehicle States'packet Des';
+		attribute def VehicleController States';
+		attribute def 'Vehicle Station'Vehicle States' {
+		attribute def 'Vehicle States';
+		attribute def VehicleOn :> VehicleController States';
+		attribute def 'Vehicle {
+			attribute def 'Vehicle OfSignal';
+		attribute def 'Signal';
+	}
+	
+	attribute def 'Designal
+
+=== Prompt 4 ===
+action def 
+
+=== Output 4 ===
+action def PublicationPort;
+		action def Topic : PublicationPort;
+		action def SubscripicationPort : ~PublicationPort;
+		
+		action def Port : ~PublicationPort;
+		action def SubscripicationPort;
+		action def SubscriptionPort;
+		
+		part pic : PublicationPort;
+		}
+		
+		part def Engine {
+		port def Focus {
+			out item picture : ~PictionPort;
+		}
+		
+		flow fr
+
+=== Prompt 5 ===
+state def 
+
+=== Output 5 ===
+state def VehicleStation;
+
+		state def VehicleController {		
+		state def VehicleStates { in redefines : VehicleOutsuput;
+	}	
+	}
+	
+	state def VehicleStates : States {
+		in initials : MassValue;
+		in partalMass : MassValue;
+		in massLengthValue;
+		}
+	}
+	
+	state def MassValue;
+	attribute def VehicleStates {
+		doc /*
+		 * The a total usage Cd ompos
+
+=== Prompt 6 ===
+requirement def 
+
+=== Output 6 ===
+requirement def MassRequirement;
+		requirement <'> vehicleMassRequirement {
+			doc /* The composite requize components of the + be the required mass. */
+			
+			attribute massActualFuelEconomyAnalysis_2: MassValue;
+			attribute redefines massAnalysisMass : MassValue;
+			attribute redefines = massReqd massReq.mass;
+			redefines massReqd = 250[k
+
+=== Prompt 7 ===
+constraint def 
+
+=== Output 7 ===
+constraint def VehicleLimit :> Engine;
+	part def Engine;
+		
+		part def Transmission {
+			part def Transmission {
+				part transmission: Engine {
+				part tranualarmission {
+					part :>> mission {
+					port :>> transmission;
+					}
+			}
+			}
+		}
+	}
+		
+	}
+	}
+}
+<|endoftext|>
+package 'Choice Example' {
+	private import Definition Example' {
+	private import States Example-1' {
+	
+
+=== Prompt 8 ===
+calc def 
+
+=== Output 8 ===
+calc def Cf : Cause; out picture {
+		in scene;
+		out item image;
+		out item picture : Scene;
+		out item picture : PictureValue; }
+	action def Focus { in scene: Picture : Scene; }
+		action def TakePicture { in scene; out pictureValue; out item image : Picture; }
+	action def Take
+
+=== Prompt 9 ===
+connection def 
+
+=== Output 9 ===
+connection def On {
+		end port pppp : Ph;
+		end port phlightPort;
+		end pl : Pict;
+		end port plugeratic : Picture;
+		
+		action avia picture : PictakePicture;
+		
+		action pictakePicture {
+			flow pictakePicture {
+			in item image;
+			out picture = picture;
+		}
+		
+		f
+
+=== Prompt 10 ===
+interface def 
+
+=== Output 10 ===
+interface def EngineTordine {
+			port fuelCmdPort: FuelCmdPort : FuelCmd;
+			port fuelCmdPort: FuelCmdPort;
+			port fuelCmdPort: FuelCmdPort;
+			
+			port fuelCmdPort: FuelCmdPort;
+			port fuelCmdPort: FuelCmdPwrPort: FuelCmdPort;
+		}
+		
+		part def Engine {
+			port fuelCmdPort {
+				ref :>> fuelCmd;
+			}
+			action 'transmiss
+
+=== Prompt 11 ===
+private import 
+
+=== Output 11 ===
+private import ISQ::mass;
+        part transmission_clutch : Transmission;
+        }
+
+        attribute def ManualClutomaticTransmission;
+        attribute :> ISQ::formation :> ISQ::torParts :> ISQ::electricTranslation;
+        }
+
+    part engine :> subSpatialParts {
+        part :>> ength = 64500[mm];
+        part :>> cylin
+
+=== Prompt 12 ===
+metadata 
+
+=== Output 12 ===
+metadata SysML::Usage;
+	item def SemanticMetadata {
+			:>> baseType = cobaseType = systemUsage;
+		}
+	}
+	
+	// :>> bases meta SysML::UsageType = fmeta SysML::Usage;
+		}
+		
+		metadata def <causeType :> SemanticMetadataExamp
+
+=== Prompt 13 ===
+ref 
+
+=== Output 13 ===
+ref recept to vehicle.vehicleControllerBehavior.resensend new to serverBehavior.deliver.sonse to se.reservering.deliverBehavior.requese to speed[1] :>> deliverBehavior.subscribe_reflow :>> delivery.subscribe_request[1] :>> subscr
+
+=== Prompt 14 ===
+in 
+
+=== Output 14 ===
+in dt = pwhwhubCd = i varioice.g(0, 0.0, 0 [source];
+	    }
+	}
+	
+	#ccolveleration {
+		doc
+		/*
+		 * A Countylindividual C Definitions art initions as this is moded be a usage the chibunoprecosion, sir powname is 
+
+=== Prompt 15 ===
+out 
+
+=== Output 15 ===
+out item pellEngine;
+        }
+
+        attribute def Assembly : String;
+        attribute def MonentReal;
+    attribute def MassValue;
+        attribute def Vel : Real;
+        attribute def MassValue;
+        attribute def Mass: MassValue;
+    }
+
+        attribute def MassValue;
+        attribute def MassValue;
+        attribute def Mass :> ISQ::mass:>ISQ::mass;
+        attribute mass :> ISQ::mass;
+        attribute mass : MassValue;
+        attribute def Mass: MassValue;
+        attribute 
+
+=== Prompt 16 ===
+package Vehicle {
+    part def 
+
+=== Output 16 ===
+package Vehicle {
+    part def VehicleModel {
+		part vehicle1 {
+        part vehicle1_c1_c1 : VehicleController {@Safety{
+			port :>> vehicleController_c1_b {
+				requirement se :>> c1_b;
+				attribute :>> c1_c1;
+				:>> c2;
+				:>> c1;
+			}
+			part :>> c1 {
+				part :>> c1 : C1 {
+				:>> c4;
+			}
+		}
+		
+		part :>> c1_1 :>> c1 : C1 : C1;
+			part :>> c1
+
+=== Prompt 17 ===
+package Vehicle {
+    action def 
+
+=== Output 17 ===
+package Vehicle {
+    action def ProvidePower;
+    part torqueGenerator {
+        port def PowerPowerSeIgnitionCruiseControlPort: FuelCmdPort; }
+	}
+}
+<|endoftext|>
+package '1-Function' {
+	private import Port Example' {
+	private import ScalarValues::Real;
+	private import ScalarValues::Real;
+	private import ISQ::*;
+	private import ISQ::*;
+	
+	part def CarValuesimpleModeltMetadata : Entrical
+
+=== Prompt 18 ===
+part def Vehicle {
+    attribute 
+
+=== Output 18 ===
+part def Vehicle {
+    attribute roccurrence :>> elements = 2.mass = 25000 [kg];
+    }
+}
+<|endoftext|>
+package '1-1-1-Function' {
+	private import ScalarValues::*;
+	private import ParValues::Real;
+	private import SI::*;
+	
+	part def SI::Pkg;
+	
+	package P1 {
+		
+		part ab1 : A;
+	part p;
+		part d;		
+		part x: P2 : P1 : P1 {
+			part a1 : P2;
+		part p1;
+		
+
+=== Prompt 19 ===
+action def Compute {
+    in 
+
+=== Output 19 ===
+action def Compute {
+    in item image : TimeValue; picture; }
+        in attribute pictpicture = pictpicture; }
+	
+	action picture::picture;
+	
+	action takePicture;
+		
+		action picture {
+		in fuel : Fuel;
+		
+		action picture { out item scene : Fuel;
+			out image;
+		out item picture : Picture;
+		}
+		
+		action focus : Image;
+		
+		action focus : 
+
+=== Prompt 20 ===
+action def Compute {
+    out 
+
+=== Output 20 ===
+action def Compute {
+    out item put : Put : Power;
+		attribute tapictime;
+		
+		action takePicture {
+			in mass : ISQ::mass;
+			in takePictal;
+		}
+		
+		return : MasseValue;
+		}
+	}
+	
+	part c :> ISQ::mass;
+		attribute def Real;
+	attribute x : Real {
+		attribute mass : MassValue;
+		attribute def MassValue;
+		attribute mass : MassValue;
+		
+		attribute mass : MassValue;
+		attribute mass == mass;
+		attribute mass =

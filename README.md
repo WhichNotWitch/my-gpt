@@ -120,45 +120,41 @@ uv run pytest
 - batch 的 `x` 和 `y` shape 是否正确
 - `y` 是否是 `x` 右移一位
 
-## 当前效果
+## 当前实验结论
 
-模型已经可以生成具有 SysML v2 风格的局部片段，例如：
+### Character-level baseline
+
+字符级模型可以较快降低 loss，但生成时容易出现关键词拼写错误和重复字符，例如 `attttribute`、`Controlller`。
+
+### Byte-level BPE tokenizer
+
+Byte-BPE 使用 UTF-8 字节作为初始 token，并通过 BPE merge 学习常见 SysML 片段。当前较稳定的实验是：
 
 ```text
-package ActionVehicle {
-    part def ...
-    attribute def ...
-}
+run: runs/byte_bpe_vocab500
+tokenizer: byte-bpe
+vocab_size: 500
+block_size: 128
+n_embed: 128
+n_layer: 4
+num_heads: 4
+dropout: 0.3
 ```
-
-但由于当前训练数据较少，并且 tokenizer 仍然是字符级，生成结果还会出现：
-
-- 关键字拼写错误
-- 重复字符
-- 大括号不完全匹配
-- SysML v2 语法不可靠
-- 类型名和标识符混乱
-
-这些都是当前阶段的正常现象。
 
 ## 当前限制
 
-- 模型是字符级，不能直接理解 SysML v2 的词法 token。
-- 训练数据只有一个较小的 `input.txt`，泛化能力有限。
 - 生成结果只是“风格相似”，不能保证语法正确。
 - 还没有 SysML v2 grammar checker。
-- 还没有 BPE 或 SysML 专用 tokenizer。
 - 还没有面向 IDE 的补全接口。
 
 ## 后续方向
 
 1. 扩充 SysML v2 训练数据。
 2. 记录每次训练的 loss 曲线和配置。
-3. 实现 token-level 或 BPE tokenizer。
-4. 加入 SysML v2 语法检查或格式化。
-5. 增加更完整的 CLI，例如 `sysml-gpt train` 和 `sysml-gpt complete`。
-6. 尝试用更大的模型参数训练，例如更多层数、更大的 embedding。
-7. 探索基于 prompt 的补全任务，而不是单纯续写。
+3. 加入 SysML v2 语法检查或格式化。
+4. 增加更完整的 CLI，例如 `sysml-gpt train` 和 `sysml-gpt complete`。
+5. 尝试用更大的模型参数训练，例如更多层数、更大的 embedding。
+6. 探索基于 prompt 的补全任务，而不是单纯续写。
 ```
 
 写完后运行：
