@@ -45,17 +45,56 @@ class Head(nn.Module):
         self.key = nn.Linear(n_embed,head_size,bias=False)
         self.query = nn.Linear(n_embed,head_size,bias=False)
         self.value = nn.Linear(n_embed,head_size,bias=False)
+        cos,sin = self.build_rope_cache(block_size,head_size)
         self.dropout = nn.Dropout(dropout)
 
         self.register_buffer("tril",
                              torch.tril(torch.ones(block_size,block_size)),
                              )
+        
+        self.register_buffer("rope_cos",cos)
+        self.register_buffer("rope_sin",sin)
 
+    def build_rope_cache(block_size:int,head_size:int):
+        assert head_size %2 ==0
+        half_dim = head_size //2
+        inv_freq = 1.0 /(
+            10000 **(torch.arange(0,half_dim),float() / half_dim)
+        )
+
+        positions = torch.arange(block_size).float()
+        angles = torch.outer(positions,inv_freq)
+
+        cos = torch.cos(angles)
+        sin = torch.sin(angles)
+        return cos,sin
+    
+    def apply_rope(x:torch.tensor,cos:torch.tensor,sin:torch.tensor):
+        T = x.shape[-2]
+
+        x_even = x[...,::2]
+        x_odd  = x[...,1::2]
+
+        cos = cos[:T].unsqueeze(0)
+        sin = sin[:T].unsqueeze(0)
+
+        x_rotated = torch.stack(
+           (
+                x_even*cos-x_odd*sin,
+                x_even*sin+x_odd*cos
+            ),
+            dim=-1,
+        )
+
+        return x_rotated.flatten(-2)
 
     def forward(self,x:torch.Tensor):
         B, T, C = x.shape
         k = self.key(x)
         q = self.query(x)
+        
+        q = self.apply_rope(q,self.rope_cos,self.rope_sin)
+        k = self.apply_rope(k,self.rope_cos,self.rope_sin)
 
         weights = q @ k.transpose(-2,-1)
         weights = weights * k.shape[-1] **-0.5
@@ -148,8 +187,6 @@ class TinyGPTLanguageModel(nn.Module):
 
         self.block_size = block_size
         self.token_embedding_table = nn.Embedding(vocab_size,n_embed)
-        self.position_embedding_table = nn.Embedding(block_size,n_embed)
-        #self.sa_head = Head(n_embed,n_embed,block_size)
 
         self.blocks=nn.Sequential(
             *[Block(
@@ -169,10 +206,7 @@ class TinyGPTLanguageModel(nn.Module):
 
         token_emb = self.token_embedding_table(idx)
 
-        positions = torch.arange(block_size,device=idx.device)
-        pos_emb=self.position_embedding_table(positions)
-
-        x = token_emb+pos_emb
+        x = token_emb
         x = self.blocks(x)
         x = self.ln_f(x)
         logits=self.lm_head(x)
