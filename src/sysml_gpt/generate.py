@@ -10,9 +10,10 @@ def main():
     parser.add_argument("--checkpoint",default = "checkpoints/tiny_gpt.pt")
     parser.add_argument("--max-new-tokens",type=int,default=300)
     parser.add_argument("--start",default="\n")
-    parser.add_argument("--temperature",type = float,default=0.8)
+    parser.add_argument("--temperature",type = float,default=0.7)
     parser.add_argument("--seed",type=int,default=None)
-    parser.add_argument("--top-k",type=int,default=None)
+    parser.add_argument("--top-k",type=int,default=50)
+    parser.add_argument("--top-p",type=float,default=0.9)
     args=parser.parse_args()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -48,7 +49,7 @@ def main():
     start_ids = tokenizer.encode(args.start)
     idx = torch.tensor([start_ids],dtype=torch.long,device=device)
 
-    generated = model.generate(idx,max_new_tokens = args.max_new_tokens,temperature=args.temperature,top_k=args.top_k)
+    generated = model.generate(idx,max_new_tokens = args.max_new_tokens,temperature=args.temperature,top_k=args.top_k,top_p=args.top_p)
     text = tokenizer.decode(generated[0].tolist())
 
     print(text)

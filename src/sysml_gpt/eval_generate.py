@@ -43,6 +43,7 @@ def generate_one(
     max_new_tokens:int,
     temperature:float,
     top_k:int|None,
+    top_p:float|None,
     device:str,
 ):
     
@@ -55,6 +56,7 @@ def generate_one(
         max_new_tokens=max_new_tokens,
         temperature=temperature,
         top_k=top_k,
+        top_p=top_p,
     )
     return tokenizer.decode(generated[0].tolist())
 
@@ -65,8 +67,9 @@ def main():
     parser.add_argument("--prompts",default="eval_prompts.txt")
     parser.add_argument("--output",default="runs/eval_sample.txt")
     parser.add_argument("--max-new-tokens", type=int, default=300)
-    parser.add_argument("--temperature", type=float, default=0.8)
-    parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument("--temperature", type=float, default=0.7)
+    parser.add_argument("--top-k", type=int, default=50)
+    parser.add_argument("--top-p", type=float, default=0.9)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
@@ -88,6 +91,7 @@ def main():
             max_new_tokens=args.max_new_tokens,
             temperature=args.temperature,
             top_k=args.top_k,
+            top_p=args.top_p,
             device=device,
         )
 

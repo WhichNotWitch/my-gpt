@@ -1,50 +1,69 @@
-当然，README 用中文更适合你后续复习和展示。你可以把 `README.md` 写成下面这个版本。
-
-```markdown
 # SysML GPT
 
-这是一个面向 SysML v2 补全任务的小型字符级 GPT 项目。
+这是一个面向 SysML v2 文本补全的小型 GPT 项目。项目使用 PyTorch 从零实现 tiny GPT，并使用 `uv` 管理 Python 环境、依赖、训练、生成和测试流程。
 
-本项目使用 PyTorch 从零实现一个 tiny GPT，并使用 uv 管理 Python 环境和依赖。项目目标不是直接得到工业级补全模型，而是以工程化方式逐步理解 GPT 的训练、生成、保存、恢复和测试流程。
+当前项目目标不是直接得到工业级 SysML v2 补全器，而是以工程化方式逐步理解并实现：
 
-input.txt的数据来源于官方 Systems-Modeling/SysML-v2-Release 仓库([https://github.com/Systems-Modeling/SysML-v2-Release.git])
+- 语言模型数据构造
+- tokenizer
+- Transformer / GPT 模型
+- checkpoint 保存与恢复
+- CUDA 训练
+- 固定 prompt 评估
+- 采样策略调试
 
-## 功能特性
+训练数据来自 SysML v2 官方示例仓库：
 
-- 字符级 tokenizer
-- 训练集 / 验证集切分
-- 语言模型 mini-batch 构造
-- Bigram baseline
-- Tiny GPT 模型，包括：
-  - token embedding
-  - position embedding
-  - masked multi-head self-attention
-  - feedforward network
-  - residual connection
-  - layer normalization
-  - dropout
-- checkpoint 保存
-- resume training，从已有 checkpoint 继续训练                       
-- 支持 temperature 和 top-k sampling 的文本生成
-- 使用 pytest 测试 tokenizer 和数据 batch 逻辑
+[Systems-Modeling/SysML-v2-Release](https://github.com/Systems-Modeling/SysML-v2-Release.git)
+
+## 当前状态
+
+项目已经完成两条主线：
+
+1. 字符级 GPT baseline
+2. Byte-level BPE tokenizer + tiny GPT
+
+当前更推荐继续使用 Byte-BPE 实验线，因为它生成 SysML 关键词和局部结构时更稳定，重复字符和拼写漂移比字符级模型少。
+
+当前较稳定的实验配置：
+
+```text
+run: runs/byte_bpe_vocab500
+tokenizer: byte-bpe
+vocab_size: 500
+block_size: 128
+batch_size: 16
+n_embed: 128
+n_layer: 4
+num_heads: 4
+dropout: 0.3
+sampling: temperature=0.7, top_k=50, top_p=0.9
+```
 
 ## 项目结构
 
 ```text
 src/sysml_gpt/
-  config.py       # 训练配置
-  tokenizer.py    # 字符级 tokenizer
-  data.py         # 数据读取、切分和 batch 构造
-  model.py        # Bigram 和 TinyGPT 模型
-  train.py        # 训练入口
-  generate.py     # 文本生成入口
+  config.py         # 默认训练配置
+  tokenizer.py      # CharTokenizer、CharBPETokenizer、ByteBPETokenizer
+  data.py           # 文本读取、train/val token split、batch 构造
+  model.py          # Bigram baseline 和 TinyGPT 模型
+  train.py          # 训练入口，支持 resume、run-dir、checkpoint
+  generate.py       # 单 prompt 生成入口
+  eval_generate.py  # 固定 prompt 批量生成评估
+  prepare_data.py   # 合并 data/raw 中的 SysML 文件
 
 tests/
   test_tokenizer.py
   test_data.py
 
-input.txt         # SysML v2 训练材料
-checkpoints/      # 模型 checkpoint
+data/
+  raw/              # 原始 .sysml/.txt/.kerml 文件
+  processed/        # prepare_data.py 生成的训练文本
+
+runs/               # 每次实验的 config、loss log、last/best checkpoint
+checkpoints/        # 手动保存的重要模型
+eval_prompts.txt    # 固定评估 prompt
 ```
 
 ## 环境准备
@@ -55,58 +74,164 @@ checkpoints/      # 模型 checkpoint
 uv sync
 ```
 
-验证 PyTorch 是否可用：
+本项目当前在 `pyproject.toml` 中固定使用 CUDA 12.1 版 PyTorch：
 
-```powershell
-uv run python -c "import torch; print(torch.__version__)"
+```text
+torch==2.5.1+cu121
 ```
 
-## 训练模型
-
-从零开始训练：
+验证 PyTorch 和 CUDA：
 
 ```powershell
-uv run python -m sysml_gpt.train --no-resume --train-steps 2000 --checkpoint-path checkpoints/tiny_gpt.pt
+uv run python -c "import torch; print(torch.__version__); print(torch.version.cuda); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU only')"
 ```
 
-从已有 checkpoint 继续训练：
+期望输出类似：
+
+```text
+2.5.1+cu121
+12.1
+True
+NVIDIA GeForce RTX 2060
+```
+
+如果 `torch.cuda.is_available()` 是 `False`，说明当前环境没有使用 CUDA 版 PyTorch。
+
+## 数据准备
+
+把 SysML v2 示例文件放在：
+
+```text
+data/raw/
+```
+
+合并为训练语料：
 
 ```powershell
-uv run python -m sysml_gpt.train --resume --train-steps 500 --checkpoint-path checkpoints/tiny_gpt.pt
+uv run python -m sysml_gpt.prepare_data --input-dir data/raw --output-path data/processed/train.txt
+```
+
+当前 `prepare_data.py` 会将 `data/raw` 下的 `.txt`、`.sysml`、`.kerml` 文件按文件名排序后合并，并在文件之间插入：
+
+```text
+<|endoftext|>
+```
+
+注意：当前项目暂时没有做文件级 train/val 切分。训练时仍然是在 token 序列上连续切分 train/val。
+
+## 训练字符级 baseline
+
+字符级 tokenizer 是最简单的 baseline：
+
+```powershell
+uv run python -m sysml_gpt.train --no-resume --train-steps 3000 --run-dir runs/char_baseline --input-path data/processed/train.txt --tokenizer char --block-size 128 --batch-size 16 --n-embed 128 --n-layer 4 --num-heads 4 --dropout 0.2
+```
+
+字符级模型通常 loss 下降较快，但生成时容易出现：
+
+- 关键词拼写错误
+- 重复字符
+- 标识符漂移
+
+例如：
+
+```text
+attttribute
+Controlller
+```
+
+## 训练 Byte-BPE 模型
+
+Byte-BPE 从 UTF-8 bytes 开始训练 merge 规则，更接近 GPT 系 tokenizer。它可以编码任意 Unicode 文本，也能把高频 SysML 片段合并成更稳定的 token。
+
+推荐从 `vocab_size=500` 开始：
+
+```powershell
+uv run python -m sysml_gpt.train --no-resume --train-steps 3000 --run-dir runs/byte_bpe_vocab500 --input-path data/processed/train.txt --tokenizer byte-bpe --vocab-size 500 --block-size 128 --batch-size 16 --n-embed 128 --n-layer 4 --num-heads 4 --dropout 0.3
+```
+
+继续训练：
+
+```powershell
+uv run python -m sysml_gpt.train --resume --train-steps 3000 --run-dir runs/byte_bpe_vocab500 --input-path data/processed/train.txt
+```
+
+`--run-dir` 会把实验产物组织到同一个目录：
+
+```text
+runs/byte_bpe_vocab500/
+  config.json
+  train_log.csv
+  last.pt
+  best.pt
+```
+
+其中：
+
+- `last.pt`：最后一步 checkpoint，主要用于 resume
+- `best.pt`：验证集 loss 最低的 checkpoint，主要用于生成和评估
+
+## 生成文本
+
+单 prompt 生成：
+
+```powershell
+uv run python -m sysml_gpt.generate --checkpoint runs/byte_bpe_vocab500/best.pt --start "package " --max-new-tokens 120 --temperature 0.7 --top-k 50 --top-p 0.9 --seed 42
+```
+
+当前 Byte-BPE 推荐采样参数：
+
+```text
+temperature = 0.7
+top_k = 50
+top_p = 0.9
 ```
 
 参数说明：
 
-- `--no-resume`：不加载旧模型，从零开始训练。
-- `--resume`：加载已有 checkpoint 继续训练。
-- `--train-steps`：本次训练继续运行多少步。
-- `--checkpoint-path`：checkpoint 保存或加载路径。
+- `--start`：补全起始文本
+- `--max-new-tokens`：最多生成多少个新 token。Byte-BPE 下一个 token 可能对应多个字符
+- `--temperature`：控制随机性，越低越保守
+- `--top-k`：只从概率最高的 k 个 token 中采样
+- `--top-p`：只从累计概率达到 p 的候选集合中采样
+- `--seed`：随机种子，用于复现实验
 
-## 生成 SysML v2 文本
+## 固定 prompt 评估
 
-示例：
+`eval_prompts.txt` 中可以放固定评估 prompt，例如：
 
-```powershell
-uv run python -m sysml_gpt.generate --start "package " --max-new-tokens 300 --temperature 0.8 --top-k 5 --seed 42
+```text
+---
+package 
+---
+part def 
+---
+attribute 
+---
+action def 
+---
+state def 
+---
+requirement def 
 ```
 
-参数说明：
+批量生成评估：
 
-- `--start`：生成时的起始文本。
-- `--max-new-tokens`：最多生成多少个新字符。
-- `--temperature`：控制随机性，越低越保守，越高越发散。
-- `--top-k`：每一步只从概率最高的 k 个字符中采样。
-- `--seed`：随机种子，用于复现实验结果。
+```powershell
+uv run python -m sysml_gpt.eval_generate --checkpoint runs/byte_bpe_vocab500/best.pt --prompts eval_prompts.txt --output runs/byte_bpe_vocab500/eval_samples.txt --max-new-tokens 120 --temperature 0.7 --top-k 50 --top-p 0.9 --seed 42
+```
 
-常用生成设置：
+查看结果：
 
-- `temperature=0.6`：更保守，结构更稳定，但可能重复。
-- `temperature=0.8`：比较平衡。
-- `temperature=1.0`：更随机，更有变化，但更容易混乱。
-- `top_k=5`：更稳定，但容易重复。
-- `top_k=20`：更自由，但可能更乱。
+```powershell
+Get-Content runs\byte_bpe_vocab500\eval_samples.txt
+```
 
-## 运行测试
+固定 prompt 评估比单看 loss 更重要，因为字符级模型和 Byte-BPE 模型的 token 粒度不同，loss 数值不能直接横向比较。
+
+## 测试
+
+运行测试：
 
 ```powershell
 uv run pytest
@@ -114,57 +239,96 @@ uv run pytest
 
 当前测试覆盖：
 
-- tokenizer 编码和解码是否互逆
-- vocab size 是否正确
-- train/val split 是否正确
-- batch 的 `x` 和 `y` shape 是否正确
+- tokenizer encode/decode 往返
+- vocab size 基本逻辑
+- train/val split
+- batch shape
 - `y` 是否是 `x` 右移一位
 
 ## 当前实验结论
 
-### Character-level baseline
+### 字符级 baseline
 
-字符级模型可以较快降低 loss，但生成时容易出现关键词拼写错误和重复字符，例如 `attttribute`、`Controlller`。
+优点：
 
-### Byte-level BPE tokenizer
+- 实现简单
+- 训练稳定
+- loss 数值较容易下降
 
-Byte-BPE 使用 UTF-8 字节作为初始 token，并通过 BPE merge 学习常见 SysML 片段。当前较稳定的实验是：
+缺点：
 
-```text
-run: runs/byte_bpe_vocab500
-tokenizer: byte-bpe
-vocab_size: 500
-block_size: 128
-n_embed: 128
-n_layer: 4
-num_heads: 4
-dropout: 0.3
-```
+- 逐字符生成，容易拼错关键词
+- 容易出现重复字符
+- 对 SysML 的结构单位没有显式建模
+
+### Byte-level BPE
+
+优点：
+
+- 使用 UTF-8 bytes 作为初始 token，可以覆盖任意文本
+- 高频 SysML 片段会被合并成更稳定的 token
+- 生成关键词和局部结构更稳定
+- 重复字符问题比字符级模型少
+
+当前观察：
+
+- `vocab_size=500` 比 `vocab_size=1000` 更稳
+- Byte-BPE 的 loss 数值不能和字符级 loss 直接比较
+- `temperature=0.7, top_k=50, top_p=0.9` 的生成结果较平衡
 
 ## 当前限制
 
-- 生成结果只是“风格相似”，不能保证语法正确。
-- 还没有 SysML v2 grammar checker。
-- 还没有面向 IDE 的补全接口。
+- 当前生成仍然只是“SysML 风格相似”，不能保证语法正确
+- 还没有 SysML v2 grammar checker
+- 还没有文件级 train/val holdout
+- 还没有 IDE 或 LSP 补全接口
+- 当前模型规模较小，长距离结构和括号闭合仍不稳定
 
 ## 后续方向
 
-1. 扩充 SysML v2 训练数据。
-2. 记录每次训练的 loss 曲线和配置。
-3. 加入 SysML v2 语法检查或格式化。
-4. 增加更完整的 CLI，例如 `sysml-gpt train` 和 `sysml-gpt complete`。
-5. 尝试用更大的模型参数训练，例如更多层数、更大的 embedding。
-6. 探索基于 prompt 的补全任务，而不是单纯续写。
+建议后续按这个顺序推进：
+
+1. 稳定 Byte-BPE 主线，继续比较 `vocab_size=500/800/1000`
+2. 增加文件级 train/val 切分，让验证集更可信
+3. 加入 SysML v2 语法检查或格式化
+4. 保存更多实验元数据，例如最佳 step、生成样例、训练耗时
+5. 做一个 `complete` 命令，专门服务 SysML prompt 补全
+6. 尝试更大的模型，但优先保证数据和 tokenizer 质量
+
+## 常用命令速查
+
+准备数据：
+
+```powershell
+uv run python -m sysml_gpt.prepare_data --input-dir data/raw --output-path data/processed/train.txt
 ```
 
-写完后运行：
+训练 Byte-BPE：
+
+```powershell
+uv run python -m sysml_gpt.train --no-resume --train-steps 3000 --run-dir runs/byte_bpe_vocab500 --input-path data/processed/train.txt --tokenizer byte-bpe --vocab-size 500 --block-size 128 --batch-size 16 --n-embed 128 --n-layer 4 --num-heads 4 --dropout 0.3
+```
+
+继续训练：
+
+```powershell
+uv run python -m sysml_gpt.train --resume --train-steps 3000 --run-dir runs/byte_bpe_vocab500 --input-path data/processed/train.txt
+```
+
+生成：
+
+```powershell
+uv run python -m sysml_gpt.generate --checkpoint runs/byte_bpe_vocab500/best.pt --start "package " --max-new-tokens 120 --temperature 0.7 --top-k 50 --top-p 0.9 --seed 42
+```
+
+批量评估：
+
+```powershell
+uv run python -m sysml_gpt.eval_generate --checkpoint runs/byte_bpe_vocab500/best.pt --prompts eval_prompts.txt --output runs/byte_bpe_vocab500/eval_samples.txt --max-new-tokens 120 --temperature 0.7 --top-k 50 --top-p 0.9 --seed 42
+```
+
+测试：
 
 ```powershell
 uv run pytest
-```
-
-再验证 README 里的生成命令：
-
-```powershell
-uv run python -m sysml_gpt.generate --start "package " --max-new-tokens 100 --temperature 0.8 --top-k 5 --seed 42
 ```

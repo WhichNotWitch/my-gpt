@@ -187,24 +187,45 @@ class TinyGPTLanguageModel(nn.Module):
 
         return logits,loss
     
-    def generate(self,idx:torch.Tensor,max_new_tokens:int,temperature:float = 1.0,top_k:int|None=None):
+    def generate(self,idx:torch.Tensor,max_new_tokens:int,temperature:float = 1.0,top_k:int|None=None,top_p:float|None=None):
         for _ in range(max_new_tokens):
             idx_cond = idx[:,-self.block_size:]
             logits,_ = self(idx_cond)
 
             logits = logits[:,-1,:]
-            logits = logits / temperature
+            #logits / temperature
             
+            
+            
+            logits = logits / temperature
+            #top_k 过滤 logits
             if top_k is not None:
                 values,_ = torch.topk(logits,k=top_k)
                 min_values = values[:,-1].unsqueeze(-1)
-                logits = torch.where(
-                    logits < min_values,
-                    torch.full_like(logits,float("-inf")),
-                    logits,
-                )
+                logits = logits.masked_fill(logits < min_values, float("-inf"))
+            #softmax 得到 probs
             probs = F.softmax(logits,dim=-1)
-            idx_next = torch.multinomial(probs,num_samples=1)
+            #top_p 过滤 probs
+            if top_p is not None:
+                sorted_probs,sorted_indices = torch.sort(probs,descending=True,dim=-1)
+                #计算前缀和数组
+                cummulative_probs = torch.cumsum(sorted_probs,dim=-1)
+
+                sorted_mask = cummulative_probs>top_p
+                #向右移动一位，把“第一个超过 top_p 的 token”也保留下来。
+                sorted_mask[:,1:] =sorted_mask[:,:-1].clone()
+                sorted_mask[:,0] = False
+
+                sorted_probs = sorted_probs.masked_fill_(sorted_mask,0.0)
+                #重新归一化
+                sorted_probs = sorted_probs / sorted_probs.sum(dim=-1,keepdim=True)
+
+                sorted_next = torch.multinomial(sorted_probs,num_samples=1)
+                idx_next = sorted_indices.gather(-1,sorted_next)
+            else:
+                #multinomial 采样
+                idx_next = torch.multinomial(probs,num_samples=1)
+            
             idx = torch.cat((idx,idx_next),dim=1)
 
         return idx
