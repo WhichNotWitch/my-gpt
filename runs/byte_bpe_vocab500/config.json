@@ -1,0 +1,22 @@
+{
+  "input_path": "data/processed/train.txt",
+  "checkpoint_path": "runs\\byte_bpe_vocab500\\last.pt",
+  "best_checkpoint_path": "runs\\byte_bpe_vocab500\\best.pt",
+  "resume_path": "runs\\byte_bpe_vocab500\\last.pt",
+  "log_path": "runs\\byte_bpe_vocab500\\train_log.csv",
+  "config_snapshot_path": "runs\\byte_bpe_vocab500\\config.json",
+  "run_dir": "runs/byte_bpe_vocab500",
+  "tokenizer": "char",
+  "vocab_size": 1000,
+  "batch_size": 32,
+  "block_size": 128,
+  "train_steps": 3000,
+  "eval_interval": 100,
+  "eval_iters": 20,
+  "learning_rate": 0.0003,
+  "n_embed": 128,
+  "n_layer": 4,
+  "num_heads": 4,
+  "dropout": 0.3,
+  "resume": true
+}

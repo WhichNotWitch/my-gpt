@@ -12,7 +12,7 @@ from pathlib import Path
 
 from sysml_gpt.data import get_batch,load_text,train_val_split
 from sysml_gpt.model import TinyGPTLanguageModel
-from sysml_gpt.tokenizer import CharTokenizer
+from sysml_gpt.tokenizer import build_tokenizer,tokenizer_from_state
 from sysml_gpt.config import TrainConfig
 
 
@@ -36,6 +36,8 @@ def parse_args():
     parser.add_argument("--n-layer", type=int, default=None)
     parser.add_argument("--num-heads", type=int, default=None)
     parser.add_argument("--dropout", type=float, default=None)
+    parser.add_argument("--tokenizer",choices=["char","byte-bpe"],default=None)
+    parser.add_argument("--vocab-size",type=int,default=None)
     return parser.parse_args()
 
 def apply_args(config: TrainConfig, args):
@@ -92,6 +94,12 @@ def apply_args(config: TrainConfig, args):
 
     if args.dropout is not None:
         config.dropout = args.dropout
+
+    if args.tokenizer is not None:
+        config.tokenizer = args.tokenizer
+
+    if args.vocab_size is not None:
+        config.vocab_size = args.vocab_size
     return config
 
 def save_config_snapshot(config:TrainConfig):
@@ -108,9 +116,9 @@ def estimate_loss(model,train_data,val_data,config):
     model.eval()
 
     for split,data in [("train",train_data),("val",val_data)]:
-        losses = torch.zeros(20)
+        losses = torch.zeros(config.eval_iters)
 
-        for k in range(20):
+        for k in range(config.eval_iters):
             x,y = get_batch(data,batch_size=config.batch_size,block_size=config.block_size)
             x = x.to(device)
             y = y.to(device)
@@ -139,8 +147,7 @@ def save_checkpoint(
     checkpoint ={
             "model_state_dict":model.state_dict(),
             "vocab_size":tokenizer.vocab_size,
-            "stoi":tokenizer.stoi,
-            "itos":tokenizer.itos,
+            "tokenizer":tokenizer.state_dict(),
             "block_size":config.block_size,
             "n_embed":config.n_embed,
             "n_layer": config.n_layer,
@@ -169,39 +176,50 @@ def append_log(path,step,train_loss,val_loss,best_val_loss):
         writer.writerow([step,train_loss,val_loss,best_val_loss])
 
 def main():
+    #加载cli指令
     args = parse_args()
+    #加载配置文件
     config = apply_args(TrainConfig(), args)
-    save_config_snapshot(config)
+    
     
     text = load_text(config.input_path)
-    tokenizer = CharTokenizer(text=text)
-
-    ids = tokenizer.encode(text=text)
-    data = torch.tensor(ids,dtype = torch.long)
-
-    train_data,val_data = train_val_split(data=data)
-
+    
     checkpoint = None
     start_step = 0
     best_val_loss = float("inf")
-    
+    #如果从checkpoint开始训练 覆盖config
     if config.resume and Path(config.resume_path).exists():
         checkpoint = torch.load(
             config.resume_path,
             map_location=device,
             weights_only=False,
-    )
+        )
+        config.block_size = checkpoint["block_size"]
+        config.n_embed = checkpoint["n_embed"]
+        config.n_layer = checkpoint["n_layer"]
+        config.num_heads = checkpoint["num_heads"]
+        config.dropout = checkpoint["dropout"]
 
-    config.block_size = checkpoint["block_size"]
-    config.n_embed = checkpoint["n_embed"]
-    config.n_layer = checkpoint["n_layer"]
-    config.num_heads = checkpoint["num_heads"]
-    config.dropout = checkpoint["dropout"]
+        start_step = checkpoint.get("step", 0)
+        best_val_loss = checkpoint.get("best_val_loss", float("inf"))
 
-    start_step = checkpoint.get("step", 0)
-    best_val_loss = checkpoint.get("best_val_loss", float("inf"))
+        print(f"resume from {config.resume_path} at step {start_step}")
 
-    print(f"resume from {config.resume_path} at step {start_step}")
+    if checkpoint is not None and "tokenizer" in checkpoint:
+        tokenizer = tokenizer_from_state(checkpoint["tokenizer"])
+    else:
+        tokenizer = build_tokenizer(
+            kind=config.tokenizer,
+            text=text,
+            vocab_size=config.vocab_size,
+        )
+
+    save_config_snapshot(config)
+    ids = tokenizer.encode(text=text)
+    data = torch.tensor(ids,dtype = torch.long)
+
+    train_data,val_data = train_val_split(data=data)
+
     model = TinyGPTLanguageModel(
         vocab_size=tokenizer.vocab_size,
         n_embed=config.n_embed,

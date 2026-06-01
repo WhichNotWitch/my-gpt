@@ -1,4 +1,4 @@
-"""字符级tokenizer"""
+"""简易字符级tokenizer"""
 class CharTokenizer:
     def __init__(self,text:str):
         chars = sorted(set(text))
@@ -11,7 +11,16 @@ class CharTokenizer:
 
     def decode(self,ids:list[int])->str:
         return "".join(self.itos[id] for id in ids)       
+    
+    def state_dict(self) -> dict:
+        return {
+            "type": "char",
+            "vocab_size": self.vocab_size,
+            "stoi": self.stoi,
+            "itos": self.itos,
+        }
 
+    
 """字符级BPEtokenizer"""
 def get_pair_counts(tokens:list[str])->dict[tuple[str,str],int]:
     counts={}
@@ -71,7 +80,23 @@ class CharBPETokenizer:
         self.id_to_token = {i: token for i, token in self.token_to_id.items()}
 
         self.vocab_size = len(self.token_to_id)
+    
+    def encode(self, text: str) -> list[int]:
+        tokens = list(text)
 
+        for pair in self.merges:
+            new_token = pair[0] + pair[1]
+            tokens = merge_pair(tokens, pair, new_token)
+
+        return [self.token_to_id[token] for token in tokens]
+
+
+    def decode(self, ids: list[int]) -> str:
+        tokens = [self.id_to_token[i] for i in ids]
+        return "".join(tokens)
+    
+
+"""字符级BPEtokenizer"""
 def get_byte_pair_counts(tokens: list[int]) -> dict[tuple[int, int], int]:
     counts = {}
 
@@ -148,8 +173,63 @@ class ByteBPETokenizer:
         data = b"".join(byte_chunks)
         return data.decode("utf-8", errors="replace")
     
+    def state_dict(self)->dict:
+        return {
+            "type":"byte_bpe",
+            "target_vocab_size":self.target_vocab_size,
+            "merges":[
+                [a,b,new_id]
+                for (a,b),new_id in self.merges.items()
+            ]
+        }
+    
+    @classmethod
+    def from_state_dict(cls,state:dict):
+        tokenizer = cls(vocab_size=state["target_vocab_size"])
+        tokenizer.merges = {}
+        tokenizer.vocab = {i:bytes([i]) for i in range(256)}
+
+        for a,b,new_id in state["merges"]:
+            pair = (a,b)
+            tokenizer.merges[pair] = new_id
+            tokenizer.vocab[new_id] = tokenizer.vocab[a] +tokenizer.vocab[b]
+
+        tokenizer.vocab_size = len(tokenizer.vocab)
+        return tokenizer
 
 
+def build_tokenizer(kind:str,text:str,vocab_size:int|None=None):
+    if kind=="char":
+        return CharTokenizer(text)
+    
+    if kind=="char-bpe":
+        return None
+    
+    if kind=="byte-bpe":
+        if vocab_size is None:
+            raise ValueError("vocab_size if required for byte-bpe tokenizer")
+        
+        tokenizer = ByteBPETokenizer(vocab_size=vocab_size)
+        tokenizer.train(text=text)
+        return tokenizer
+    
+    raise ValueError(f"unknown tokenizer kind: {kind}")
+    
+
+def tokenizer_from_state(state:dict):
+    tokenizer_type = state["type"]
+
+    if tokenizer_type =="char":
+        tokenizer = object.__new__(CharTokenizer)
+        tokenizer.stoi = state["stoi"]
+        tokenizer.itos = {int(k):v for k,v in state["itos"].items()}
+        tokenizer.vocab_size = state["vocab_size"]
+        return tokenizer
+    
+    if tokenizer_type=="byte_bpe":
+        return ByteBPETokenizer.from_state_dict(state)
+    
+    raise ValueError(f"unknown tokenizer type: {tokenizer_type}")
 if __name__ == "__main__":
     text = "attribute attribute action action package package 属性 测试"
 
@@ -169,3 +249,12 @@ if __name__ == "__main__":
         if i >= 20:
             break
         print(pair, "->", new_id, tokenizer.vocab[new_id])
+
+    state = tokenizer.state_dict()
+    restored = ByteBPETokenizer.from_state_dict(state)
+
+    restored_ids = restored.encode(text)
+    restored_decoded = restored.decode(restored_ids)
+
+    print("restored roundtrip:", restored_decoded == text)
+    print("same ids:", restored_ids == ids)

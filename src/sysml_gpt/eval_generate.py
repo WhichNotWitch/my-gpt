@@ -7,6 +7,7 @@ from pathlib import Path
 import torch
 
 from sysml_gpt.model import TinyGPTLanguageModel
+from sysml_gpt.tokenizer import tokenizer_from_state
 
 def load_prompts(path:str) ->list[str]:
     text = Path(path).read_text(encoding="utf-8")
@@ -31,10 +32,12 @@ def load_model(checkpoint_path:str,device:str):
     model = model.to(device)
     model.eval()
 
-    return model,checkpoint
+    tokenizer = tokenizer_from_state(checkpoint["tokenizer"])
+    return model,checkpoint,tokenizer
 
 def generate_one(
     model,
+    tokenizer,
     checkpoint,
     prompt:str,
     max_new_tokens:int,
@@ -42,10 +45,9 @@ def generate_one(
     top_k:int|None,
     device:str,
 ):
-    stoi = checkpoint["stoi"]
-    itos = checkpoint["itos"]
+    
 
-    ids = [stoi[ch] for ch in prompt]
+    ids = tokenizer.encode(prompt)
     idx = torch.tensor([ids],dtype=torch.long,device=device)
 
     generated = model.generate(
@@ -54,7 +56,7 @@ def generate_one(
         temperature=temperature,
         top_k=top_k,
     )
-    return "".join(itos[i] for i in generated[0].tolist())
+    return tokenizer.decode(generated[0].tolist())
 
 
 def main():
@@ -72,7 +74,7 @@ def main():
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    model, checkpoint = load_model(args.checkpoint, device)
+    model, checkpoint,tokenizer = load_model(args.checkpoint, device)
     prompts = load_prompts(args.prompts)
 
     outputs = []
@@ -80,6 +82,7 @@ def main():
     for i, prompt in enumerate(prompts, start=1):
         text = generate_one(
             model=model,
+            tokenizer=tokenizer,
             checkpoint=checkpoint,
             prompt=prompt,
             max_new_tokens=args.max_new_tokens,
