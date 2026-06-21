@@ -55,13 +55,13 @@ class Head(nn.Module):
         self.register_buffer("rope_cos",cos)
         self.register_buffer("rope_sin",sin)
 
-    def build_rope_cache(block_size:int,head_size:int):
+    def build_rope_cache(self,block_size:int,head_size:int):
         assert head_size %2 ==0
         half_dim = head_size //2
         inv_freq = 1.0 /(
-            10000 **(torch.arange(0,half_dim),float() / half_dim)
+            10000 **(torch.arange(0,half_dim).float() / half_dim)
         )
-
+        
         positions = torch.arange(block_size).float()
         angles = torch.outer(positions,inv_freq)
 
@@ -69,15 +69,17 @@ class Head(nn.Module):
         sin = torch.sin(angles)
         return cos,sin
     
-    def apply_rope(x:torch.tensor,cos:torch.tensor,sin:torch.tensor):
+    def apply_rope(self,x:torch.Tensor,cos:torch.Tensor,sin:torch.Tensor):
         T = x.shape[-2]
 
         x_even = x[...,::2]
         x_odd  = x[...,1::2]
 
+        #添加batch维度，便于广播计算
         cos = cos[:T].unsqueeze(0)
         sin = sin[:T].unsqueeze(0)
 
+        #这里的stack(,dim=-1)与flatten(-2)，配合起来实现了奇偶配对
         x_rotated = torch.stack(
            (
                 x_even*cos-x_odd*sin,

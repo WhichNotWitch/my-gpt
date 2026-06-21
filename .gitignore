@@ -5,6 +5,10 @@ build/
 dist/
 wheels/
 *.egg-info
-
+# Training outputs
+checkpoints/
+runs/
+*.pt
+*.pt.tmp
 # Virtual environments
 .venv
