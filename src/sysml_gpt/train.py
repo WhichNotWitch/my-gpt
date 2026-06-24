@@ -111,6 +111,26 @@ def apply_args(config: TrainConfig, args):
         config.vocab_size = args.vocab_size
     return config
 
+def apply_checkpoint_config(config: TrainConfig, checkpoint: dict):
+    config.block_size = checkpoint["block_size"]
+    config.n_embed = checkpoint["n_embed"]
+    config.n_layer = checkpoint["n_layer"]
+    config.num_heads = checkpoint["num_heads"]
+    config.dropout = checkpoint["dropout"]
+    config.vocab_size = checkpoint["vocab_size"]
+
+    tokenizer_state = checkpoint.get("tokenizer")
+    if tokenizer_state is not None:
+        tokenizer_type = tokenizer_state.get("type")
+        if tokenizer_type == "byte_bpe":
+            config.tokenizer = "byte-bpe"
+        elif tokenizer_type == "char":
+            config.tokenizer = "char"
+        else:
+            config.tokenizer = tokenizer_type
+
+    return config
+
 def save_config_snapshot(config:TrainConfig):
     path = Path(config.config_snapshot_path)
     path.parent.mkdir(exist_ok=True)
@@ -213,11 +233,7 @@ def main():
             map_location=device,
             weights_only=False,
         )
-        config.block_size = checkpoint["block_size"]
-        config.n_embed = checkpoint["n_embed"]
-        config.n_layer = checkpoint["n_layer"]
-        config.num_heads = checkpoint["num_heads"]
-        config.dropout = checkpoint["dropout"]
+        apply_checkpoint_config(config, checkpoint)
 
         start_step = checkpoint.get("step", 0)
         best_val_loss = checkpoint.get("best_val_loss", float("inf"))
