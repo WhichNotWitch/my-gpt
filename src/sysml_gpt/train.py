@@ -22,6 +22,8 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--train-steps", type=int, default=None)
+    parser.add_argument("--eval-interval", type=int, default=None)
+    parser.add_argument("--eval-iters", type=int, default=None)
     parser.add_argument("--learning-rate", type=float, default=None)
     parser.add_argument("--batch-size", type=int, default=None)
     parser.add_argument("--block-size", type=int, default=None)
@@ -44,6 +46,12 @@ def parse_args():
 def apply_args(config: TrainConfig, args):
     if args.train_steps is not None:
         config.train_steps = args.train_steps
+
+    if args.eval_interval is not None:
+        config.eval_interval = args.eval_interval
+
+    if args.eval_iters is not None:
+        config.eval_iters = args.eval_iters
 
     if args.learning_rate is not None:
         config.learning_rate = args.learning_rate
